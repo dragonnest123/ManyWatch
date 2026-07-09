@@ -4,9 +4,14 @@ public class RoomMember
 {
     public Guid UserId { get; set; }
     public Guid RoomId { get; set; }
+    public Room? Room { get; set; }
     public DateTime JoinedAt { get; set; }
     public bool IsHost { get; set; }
     
+    private RoomMember()
+    {
+    }
+
     public RoomMember(Guid userId, Guid roomId, bool isHost)
     {
         UserId = userId;
