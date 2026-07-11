@@ -1,11 +1,11 @@
 import { FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getCurrentUserId } from '../../../shared/currentUser';
 import { createRoom } from '../api/roomsApi';
 
 export function CreateRoomForm() {
   const navigate = useNavigate();
 
-  const [hostId, setHostId] = useState('');
   const [name, setName] = useState('');
   const [isPrivate, setIsPrivate] = useState(false);
   const [error, setError] = useState('');
@@ -18,9 +18,11 @@ export function CreateRoomForm() {
     setIsSubmitting(true);
 
     try {
+      const hostId = getCurrentUserId();
+
       const room = await createRoom({
         hostId,
-        name,
+        name: name.trim(),
         isPrivate,
       });
 
@@ -35,17 +37,9 @@ export function CreateRoomForm() {
   return (
     <form className="form" onSubmit={handleSubmit}>
       <label>
-        Host Id
-        <input
-          value={hostId}
-          onChange={(event) => setHostId(event.target.value)}
-          placeholder="00000000-0000-0000-0000-000000000000"
-        />
-      </label>
-
-      <label>
         Room name
         <input
+          required
           value={name}
           onChange={(event) => setName(event.target.value)}
           placeholder="Movie night"

@@ -16,14 +16,11 @@ public static class RoomEndpoints
 
             rooms.MapGet("/{id:guid}", GetRoom.Handle);
 
-            rooms.MapPost("/{id:guid}/join", JoinRoom.Handle)
-                .AddEndpointFilter<ValidationFilter<JoinRoomRequest>>();
+            rooms.MapPost("/{id:guid}/join/{userId:guid}", JoinRoom.Handle);
 
-            rooms.MapPost("/{id:guid}/leave", LeaveRoom.Handle)
-                .AddEndpointFilter<ValidationFilter<LeaveRoomRequest>>();
+            rooms.MapPost("/{id:guid}/leave/{userId:guid}", LeaveRoom.Handle);
 
-            rooms.MapDelete("/{id:guid}", DeleteRoom.Handle)
-                .AddEndpointFilter<ValidationFilter<DeleteRoomRequest>>();
+            rooms.MapDelete("/{id:guid}/{userId:guid}", DeleteRoom.Handle);
 
             return app;
         }

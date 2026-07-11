@@ -1,3 +1,9 @@
+using FluentValidation;
+using ManyWatch.Features.Rooms;
+using ManyWatch.Features.Rooms.Endpoints;
+using ManyWatch.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // builder.Services.ConfigureHttpJsonOptions(options =>
@@ -5,6 +11,9 @@ var builder = WebApplication.CreateBuilder(args);
 //     options.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default);
 // });
 builder.Services.AddOpenApi();
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddTransient<IValidator<CreateRoomRequest>, CreateRoomValidator>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Client", policy =>
@@ -24,6 +33,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("Client");
+
+app.AddRoomEndpoints();
 
 app.Run();
 //

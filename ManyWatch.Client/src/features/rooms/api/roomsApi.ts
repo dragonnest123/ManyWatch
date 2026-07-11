@@ -1,11 +1,5 @@
 import { apiRequest } from '../../../shared/httpClient';
-import type {
-  CreateRoomRequest,
-  DeleteRoomRequest,
-  JoinRoomRequest,
-  LeaveRoomRequest,
-  Room,
-} from '../model/types';
+import type { CreateRoomRequest, Room } from '../model/types';
 
 export function createRoom(request: CreateRoomRequest): Promise<Room> {
   return apiRequest<Room>('/rooms', {
@@ -18,23 +12,20 @@ export function getRoom(roomId: string): Promise<Room> {
   return apiRequest<Room>(`/rooms/${roomId}`);
 }
 
-export function joinRoom(roomId: string, request: JoinRoomRequest): Promise<Room> {
-  return apiRequest<Room>(`/rooms/${roomId}/join`, {
+export function joinRoom(roomId: string, userId: string): Promise<Room> {
+  return apiRequest<Room>(`/rooms/${roomId}/join/${userId}`, {
     method: 'POST',
-    body: request,
   });
 }
 
-export function leaveRoom(roomId: string, request: LeaveRoomRequest): Promise<Room | { message: string }> {
-  return apiRequest<Room | { message: string }>(`/rooms/${roomId}/leave`, {
+export function leaveRoom(roomId: string, userId: string): Promise<Room | { message: string }> {
+  return apiRequest<Room | { message: string }>(`/rooms/${roomId}/leave/${userId}`, {
     method: 'POST',
-    body: request,
   });
 }
 
-export function deleteRoom(roomId: string, request: DeleteRoomRequest): Promise<void> {
-  return apiRequest<void>(`/rooms/${roomId}`, {
+export function deleteRoom(roomId: string, userId: string): Promise<void> {
+  return apiRequest<void>(`/rooms/${roomId}/${userId}`, {
     method: 'DELETE',
-    body: request,
   });
 }

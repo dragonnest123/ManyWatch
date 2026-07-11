@@ -6,16 +6,17 @@ namespace ManyWatch.Features.Rooms.Endpoints;
 public static class DeleteRoom
 {
     public static async Task<IResult> Handle(
-        DeleteRoomRequest request,
+        Guid id,
+        Guid userId,
         AppDbContext db,
         CancellationToken cancellationToken)
     {
         var room = await db.Rooms
-            .FirstOrDefaultAsync(room => room.Id == request.RoomId, cancellationToken);
+            .FirstOrDefaultAsync(room => room.Id == id, cancellationToken);
         
         if (room is null)
             return Results.NotFound(new { error = "Room was not found." });
-        if (room.HostId != request.UserId)
+        if (room.HostId != userId)
             return Results.Forbid();
 
         db.Rooms.Remove(room);

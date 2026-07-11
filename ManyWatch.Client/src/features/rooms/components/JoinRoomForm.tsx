@@ -1,12 +1,12 @@
 import { FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getCurrentUserId } from '../../../shared/currentUser';
 import { joinRoom } from '../api/roomsApi';
 
 export function JoinRoomForm() {
   const navigate = useNavigate();
 
   const [roomId, setRoomId] = useState('');
-  const [userId, setUserId] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -17,9 +17,10 @@ export function JoinRoomForm() {
     setIsSubmitting(true);
 
     try {
-      const room = await joinRoom(roomId, { userId });
+      const currentUserId = getCurrentUserId();
+      const room = await joinRoom(roomId.trim(), currentUserId);
 
-      navigate(`/rooms/${room.id}?userId=${userId}`);
+      navigate(`/rooms/${room.id}?userId=${currentUserId}`);
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Failed to join room');
     } finally {
@@ -32,18 +33,10 @@ export function JoinRoomForm() {
       <label>
         Room Id
         <input
+          required
           value={roomId}
           onChange={(event) => setRoomId(event.target.value)}
           placeholder="Room Guid"
-        />
-      </label>
-
-      <label>
-        User Id
-        <input
-          value={userId}
-          onChange={(event) => setUserId(event.target.value)}
-          placeholder="User Guid"
         />
       </label>
 
