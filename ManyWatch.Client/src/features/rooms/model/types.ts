@@ -18,15 +18,3 @@ export type CreateRoomRequest = {
   name: string;
   isPrivate: boolean;
 };
-
-export type JoinRoomRequest = {
-  userId: string;
-};
-
-export type LeaveRoomRequest = {
-  userId: string;
-};
-
-export type DeleteRoomRequest = {
-  userId: string;
-};

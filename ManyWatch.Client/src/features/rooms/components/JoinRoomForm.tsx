@@ -1,12 +1,12 @@
 import { FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getCurrentUserId } from '../../../shared/currentUser';
 import { joinRoom } from '../api/roomsApi';
 
 export function JoinRoomForm() {
   const navigate = useNavigate();
 
   const [roomId, setRoomId] = useState('');
-  const [userId, setUserId] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -17,7 +17,8 @@ export function JoinRoomForm() {
     setIsSubmitting(true);
 
     try {
-      const room = await joinRoom(roomId, { userId });
+      const userId = getCurrentUserId();
+      const room = await joinRoom(roomId, userId);
 
       navigate(`/rooms/${room.id}?userId=${userId}`);
     } catch (error) {
@@ -28,30 +29,21 @@ export function JoinRoomForm() {
   }
 
   return (
-    <form className="form" onSubmit={handleSubmit}>
-      <label>
-        Room Id
-        <input
-          value={roomId}
-          onChange={(event) => setRoomId(event.target.value)}
-          placeholder="Room Guid"
-        />
-      </label>
+      <form className="form" onSubmit={handleSubmit}>
+        <label>
+          Room Id
+          <input
+              value={roomId}
+              onChange={(event) => setRoomId(event.target.value)}
+              placeholder="Room Guid"
+          />
+        </label>
 
-      <label>
-        User Id
-        <input
-          value={userId}
-          onChange={(event) => setUserId(event.target.value)}
-          placeholder="User Guid"
-        />
-      </label>
+        {error && <p className="error">{error}</p>}
 
-      {error && <p className="error">{error}</p>}
-
-      <button disabled={isSubmitting} type="submit">
-        {isSubmitting ? 'Joining...' : 'Join room'}
-      </button>
-    </form>
+        <button disabled={isSubmitting} type="submit">
+          {isSubmitting ? 'Joining...' : 'Join room'}
+        </button>
+      </form>
   );
 }

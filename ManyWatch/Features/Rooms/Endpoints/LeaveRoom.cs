@@ -6,17 +6,18 @@ namespace ManyWatch.Features.Rooms.Endpoints;
 public static class LeaveRoom
 {
     public static async Task<IResult> Handle(
-        LeaveRoomRequest request,
+        Guid id,
+        Guid userId,
         AppDbContext db,
         CancellationToken cancellationToken)
     {
         var room = await db.Rooms
             .Include(room => room.Members)
-            .FirstOrDefaultAsync(room => room.Id == request.RoomId, cancellationToken);
+            .FirstOrDefaultAsync(room => room.Id == id, cancellationToken);
         if (room is null)
             return Results.NotFound(new { error = "Room was not found." });
         
-        var member = room.Members.FirstOrDefault(member => member.UserId == request.UserId);
+        var member = room.Members.FirstOrDefault(member => member.UserId == userId);
         if (member is null)
             return Results.NotFound(new { error = "User is not a member of this room." });
 

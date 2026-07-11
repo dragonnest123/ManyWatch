@@ -47,7 +47,7 @@ export function RoomPage() {
     }
 
     try {
-      await leaveRoom(roomId, { userId: currentUserId });
+      await leaveRoom(roomId, currentUserId);
       navigate('/');
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Failed to leave room');
@@ -61,7 +61,7 @@ export function RoomPage() {
     }
 
     try {
-      await deleteRoom(roomId, { userId: currentUserId });
+      await deleteRoom(roomId, currentUserId);
       navigate('/');
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Failed to delete room');

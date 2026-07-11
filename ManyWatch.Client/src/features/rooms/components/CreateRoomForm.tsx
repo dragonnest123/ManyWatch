@@ -1,11 +1,11 @@
 import { FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getCurrentUserId } from '../../../shared/currentUser';
 import { createRoom } from '../api/roomsApi';
 
 export function CreateRoomForm() {
   const navigate = useNavigate();
 
-  const [hostId, setHostId] = useState('');
   const [name, setName] = useState('');
   const [isPrivate, setIsPrivate] = useState(false);
   const [error, setError] = useState('');
@@ -18,6 +18,8 @@ export function CreateRoomForm() {
     setIsSubmitting(true);
 
     try {
+      const hostId = getCurrentUserId();
+
       const room = await createRoom({
         hostId,
         name,
@@ -33,39 +35,30 @@ export function CreateRoomForm() {
   }
 
   return (
-    <form className="form" onSubmit={handleSubmit}>
-      <label>
-        Host Id
-        <input
-          value={hostId}
-          onChange={(event) => setHostId(event.target.value)}
-          placeholder="00000000-0000-0000-0000-000000000000"
-        />
-      </label>
+      <form className="form" onSubmit={handleSubmit}>
+        <label>
+          Room name
+          <input
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              placeholder="Movie night"
+          />
+        </label>
 
-      <label>
-        Room name
-        <input
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          placeholder="Movie night"
-        />
-      </label>
+        <label className="checkbox">
+          <input
+              type="checkbox"
+              checked={isPrivate}
+              onChange={(event) => setIsPrivate(event.target.checked)}
+          />
+          Private room
+        </label>
 
-      <label className="checkbox">
-        <input
-          type="checkbox"
-          checked={isPrivate}
-          onChange={(event) => setIsPrivate(event.target.checked)}
-        />
-        Private room
-      </label>
+        {error && <p className="error">{error}</p>}
 
-      {error && <p className="error">{error}</p>}
-
-      <button disabled={isSubmitting} type="submit">
-        {isSubmitting ? 'Creating...' : 'Create room'}
-      </button>
-    </form>
+        <button disabled={isSubmitting} type="submit">
+          {isSubmitting ? 'Creating...' : 'Create room'}
+        </button>
+      </form>
   );
 }

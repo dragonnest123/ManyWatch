@@ -5,9 +5,35 @@ type RequestOptions = {
   body?: unknown;
 };
 
+function getErrorMessage(errorBody: unknown, fallbackMessage: string): string {
+  if (!errorBody || typeof errorBody !== 'object') {
+    return fallbackMessage;
+  }
+
+  if ('error' in errorBody && typeof errorBody.error === 'string') {
+    return errorBody.error;
+  }
+
+  if ('title' in errorBody && typeof errorBody.title === 'string') {
+    fallbackMessage = errorBody.title;
+  }
+
+  if ('errors' in errorBody && errorBody.errors && typeof errorBody.errors === 'object') {
+    const errors = Object.values(errorBody.errors)
+        .flat()
+        .filter((error): error is string => typeof error === 'string');
+
+    if (errors.length > 0) {
+      return errors.join('\n');
+    }
+  }
+
+  return fallbackMessage;
+}
+
 export async function apiRequest<TResponse>(
-  path: string,
-  options: RequestOptions = {},
+    path: string,
+    options: RequestOptions = {},
 ): Promise<TResponse> {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     method: options.method ?? 'GET',
@@ -18,20 +44,13 @@ export async function apiRequest<TResponse>(
   });
 
   if (!response.ok) {
-    let message = 'Request failed';
+    let message = response.statusText || 'Request failed';
 
     try {
       const errorBody = await response.json();
-
-      if (errorBody.error) {
-        message = errorBody.error;
-      }
-
-      if (errorBody.errors) {
-        message = Object.values(errorBody.errors).flat().join('\n');
-      }
+      message = getErrorMessage(errorBody, message);
     } catch {
-      message = response.statusText;
+      message = response.statusText || 'Request failed';
     }
 
     throw new Error(message);
