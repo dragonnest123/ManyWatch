@@ -54,8 +54,8 @@ async function getErrorMessage(response: Response): Promise<string> {
 }
 
 export async function apiRequest<TResponse>(
-  path: string,
-  options: RequestOptions = {},
+    path: string,
+    options: RequestOptions = {},
 ): Promise<TResponse> {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     method: options.method ?? 'GET',

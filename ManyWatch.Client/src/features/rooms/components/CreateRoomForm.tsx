@@ -46,20 +46,20 @@ export function CreateRoomForm() {
         />
       </label>
 
-      <label className="checkbox">
-        <input
-          type="checkbox"
-          checked={isPrivate}
-          onChange={(event) => setIsPrivate(event.target.checked)}
-        />
-        Private room
-      </label>
+        <label className="checkbox">
+          <input
+              type="checkbox"
+              checked={isPrivate}
+              onChange={(event) => setIsPrivate(event.target.checked)}
+          />
+          Private room
+        </label>
 
-      {error && <p className="error">{error}</p>}
+        {error && <p className="error">{error}</p>}
 
-      <button disabled={isSubmitting} type="submit">
-        {isSubmitting ? 'Creating...' : 'Create room'}
-      </button>
-    </form>
+        <button disabled={isSubmitting} type="submit">
+          {isSubmitting ? 'Creating...' : 'Create room'}
+        </button>
+      </form>
   );
 }

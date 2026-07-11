@@ -12,15 +12,20 @@ public static class RoomEndpoints
                 .WithTags("Rooms");
 
             rooms.MapPost("/", CreateRoom.Handle)
-                .AddEndpointFilter<ValidationFilter<CreateRoomRequest>>();
+                .AddEndpointFilter<ValidationFilter<CreateRoomRequest>>()
+                .WithTags("CreateRoom");
 
-            rooms.MapGet("/{id:guid}", GetRoom.Handle);
+            rooms.MapGet("/{id:guid}", GetRoom.Handle)
+                .WithTags("GetRoom");
 
-            rooms.MapPost("/{id:guid}/join/{userId:guid}", JoinRoom.Handle);
+            rooms.MapPost("/{id:guid}/join/{userId:guid}", JoinRoom.Handle)
+                .WithTags("JoinRoom");
 
-            rooms.MapPost("/{id:guid}/leave/{userId:guid}", LeaveRoom.Handle);
+            rooms.MapPost("/{id:guid}/leave/{userId:guid}", LeaveRoom.Handle)
+                .WithTags("LeaveRoom");
 
-            rooms.MapDelete("/{id:guid}/{userId:guid}", DeleteRoom.Handle);
+            rooms.MapDelete("/{id:guid}/{userId:guid}", DeleteRoom.Handle)
+                .WithTags("DeleteRoom");
 
             return app;
         }
