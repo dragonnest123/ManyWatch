@@ -1,34 +1,56 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5000';
 
+type ErrorResponse = {
+  error?: string;
+  title?: string;
+  detail?: string;
+  errors?: Record<string, string[] | string>;
+};
+
 type RequestOptions = {
   method?: string;
   body?: unknown;
 };
 
-function getErrorMessage(errorBody: unknown, fallbackMessage: string): string {
-  if (!errorBody || typeof errorBody !== 'object') {
+function isErrorResponse(value: unknown): value is ErrorResponse {
+  return typeof value === 'object' && value !== null;
+}
+
+function getValidationMessage(errors: ErrorResponse['errors']): string {
+  if (!errors) {
+    return '';
+  }
+
+  return Object.values(errors)
+    .flatMap((error) => (Array.isArray(error) ? error : [error]))
+    .join('\n');
+}
+
+async function getErrorMessage(response: Response): Promise<string> {
+  const fallbackMessage = response.statusText || 'Request failed';
+  const responseText = await response.text();
+
+  if (!responseText) {
     return fallbackMessage;
   }
 
-  if ('error' in errorBody && typeof errorBody.error === 'string') {
-    return errorBody.error;
-  }
+  try {
+    const errorBody: unknown = JSON.parse(responseText);
 
-  if ('title' in errorBody && typeof errorBody.title === 'string') {
-    fallbackMessage = errorBody.title;
-  }
-
-  if ('errors' in errorBody && errorBody.errors && typeof errorBody.errors === 'object') {
-    const errors = Object.values(errorBody.errors)
-        .flat()
-        .filter((error): error is string => typeof error === 'string');
-
-    if (errors.length > 0) {
-      return errors.join('\n');
+    if (!isErrorResponse(errorBody)) {
+      return fallbackMessage;
     }
-  }
 
-  return fallbackMessage;
+    return (
+      getValidationMessage(errorBody.errors) ||
+      errorBody.error ||
+      errorBody.detail ||
+      errorBody.title ||
+      fallbackMessage
+    );
+  } catch {
+    return responseText || fallbackMessage;
+  }
 }
 
 export async function apiRequest<TResponse>(
@@ -44,16 +66,7 @@ export async function apiRequest<TResponse>(
   });
 
   if (!response.ok) {
-    let message = response.statusText || 'Request failed';
-
-    try {
-      const errorBody = await response.json();
-      message = getErrorMessage(errorBody, message);
-    } catch {
-      message = response.statusText || 'Request failed';
-    }
-
-    throw new Error(message);
+    throw new Error(await getErrorMessage(response));
   }
 
   if (response.status === 204) {

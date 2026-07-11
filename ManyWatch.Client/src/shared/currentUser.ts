@@ -1,14 +1,14 @@
-const USER_ID_STORAGE_KEY = 'manywatch_user_id';
+const CURRENT_USER_ID_STORAGE_KEY = 'manywatch.currentUserId';
 
 export function getCurrentUserId(): string {
-  const existingUserId = localStorage.getItem(USER_ID_STORAGE_KEY);
+  const savedUserId = localStorage.getItem(CURRENT_USER_ID_STORAGE_KEY);
 
-  if (existingUserId) {
-    return existingUserId;
+  if (savedUserId) {
+    return savedUserId;
   }
 
   const userId = crypto.randomUUID();
-  localStorage.setItem(USER_ID_STORAGE_KEY, userId);
+  localStorage.setItem(CURRENT_USER_ID_STORAGE_KEY, userId);
 
   return userId;
 }

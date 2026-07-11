@@ -22,7 +22,7 @@ export function CreateRoomForm() {
 
       const room = await createRoom({
         hostId,
-        name,
+        name: name.trim(),
         isPrivate,
       });
 
@@ -35,15 +35,16 @@ export function CreateRoomForm() {
   }
 
   return (
-      <form className="form" onSubmit={handleSubmit}>
-        <label>
-          Room name
-          <input
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-              placeholder="Movie night"
-          />
-        </label>
+    <form className="form" onSubmit={handleSubmit}>
+      <label>
+        Room name
+        <input
+          required
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          placeholder="Movie night"
+        />
+      </label>
 
         <label className="checkbox">
           <input

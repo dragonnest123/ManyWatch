@@ -33,6 +33,8 @@ if (app.Environment.IsDevelopment())
 app.AddRoomEndpoints();
 app.UseCors("Client");
 
+app.AddRoomEndpoints();
+
 app.Run();
 //
 // [JsonSerializable(typeof(Todo[]))]

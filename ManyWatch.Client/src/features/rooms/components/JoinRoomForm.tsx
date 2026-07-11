@@ -17,10 +17,10 @@ export function JoinRoomForm() {
     setIsSubmitting(true);
 
     try {
-      const userId = getCurrentUserId();
-      const room = await joinRoom(roomId, userId);
+      const currentUserId = getCurrentUserId();
+      const room = await joinRoom(roomId.trim(), currentUserId);
 
-      navigate(`/rooms/${room.id}?userId=${userId}`);
+      navigate(`/rooms/${room.id}?userId=${currentUserId}`);
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Failed to join room');
     } finally {
@@ -29,21 +29,22 @@ export function JoinRoomForm() {
   }
 
   return (
-      <form className="form" onSubmit={handleSubmit}>
-        <label>
-          Room Id
-          <input
-              value={roomId}
-              onChange={(event) => setRoomId(event.target.value)}
-              placeholder="Room Guid"
-          />
-        </label>
+    <form className="form" onSubmit={handleSubmit}>
+      <label>
+        Room Id
+        <input
+          required
+          value={roomId}
+          onChange={(event) => setRoomId(event.target.value)}
+          placeholder="Room Guid"
+        />
+      </label>
 
-        {error && <p className="error">{error}</p>}
+      {error && <p className="error">{error}</p>}
 
-        <button disabled={isSubmitting} type="submit">
-          {isSubmitting ? 'Joining...' : 'Join room'}
-        </button>
-      </form>
+      <button disabled={isSubmitting} type="submit">
+        {isSubmitting ? 'Joining...' : 'Join room'}
+      </button>
+    </form>
   );
 }

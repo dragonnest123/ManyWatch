@@ -1,22 +1,27 @@
 import { Link } from 'react-router-dom';
+import { AppHeader } from '../shared/AppHeader';
 
 export function HomePage() {
   return (
-    <main className="page">
-      <section className="hero">
-        <h1>ManyWatch</h1>
-        <p>Create a room and watch together.</p>
+    <>
+      <AppHeader />
 
-        <div className="actions">
-          <Link className="button" to="/rooms/create">
-            Create room
-          </Link>
+      <main className="page home-page">
+        <section className="hero">
+          <h1>ManyWatch</h1>
+          <p>Create a room and watch together.</p>
 
-          <Link className="button secondary" to="/rooms/join">
-            Join room
-          </Link>
-        </div>
-      </section>
-    </main>
+          <div className="actions">
+            <Link className="button" to="/rooms/create">
+              Create room
+            </Link>
+
+            <Link className="button secondary" to="/rooms/join">
+              Join room
+            </Link>
+          </div>
+        </section>
+      </main>
+    </>
   );
 }

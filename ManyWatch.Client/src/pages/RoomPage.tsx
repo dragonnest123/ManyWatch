@@ -3,13 +3,15 @@ import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { deleteRoom, getRoom, leaveRoom } from '../features/rooms/api/roomsApi';
 import { RoomMembersList } from '../features/rooms/components/RoomMembersList';
 import type { Room } from '../features/rooms/model/types';
+import { AppHeader } from '../shared/AppHeader';
+import { getCurrentUserId } from '../shared/currentUser';
 
 export function RoomPage() {
   const { roomId } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const currentUserId = searchParams.get('userId') ?? '';
+  const currentUserId = searchParams.get('userId') ?? getCurrentUserId();
 
   const [room, setRoom] = useState<Room | null>(null);
   const [error, setError] = useState('');
@@ -70,69 +72,100 @@ export function RoomPage() {
 
   if (isLoading) {
     return (
-      <main className="page">
-        <p>Loading...</p>
-      </main>
+      <>
+        <AppHeader />
+
+        <main className="page">
+          <p>Loading...</p>
+        </main>
+      </>
     );
   }
 
   if (error) {
     return (
-      <main className="page">
-        <Link to="/">← Back</Link>
-        <p className="error">{error}</p>
-      </main>
+      <>
+        <AppHeader />
+
+        <main className="page">
+          <Link className="back-link" to="/">
+            ← Back
+          </Link>
+          <p className="error">{error}</p>
+        </main>
+      </>
     );
   }
 
   if (!room) {
     return (
-      <main className="page">
-        <Link to="/">← Back</Link>
-        <p>Room not found.</p>
-      </main>
+      <>
+        <AppHeader />
+
+        <main className="page">
+          <Link className="back-link" to="/">
+            ← Back
+          </Link>
+          <p>Room not found.</p>
+        </main>
+      </>
     );
   }
 
   return (
-    <main className="page">
-      <Link to="/">← Back</Link>
+    <>
+      <AppHeader />
 
-      <section className="card">
-        <h1>{room.name}</h1>
+      <main className="page room-page">
+        <Link className="back-link" to="/">
+          ← Back
+        </Link>
 
-        <p>
-          <strong>Room Id:</strong> {room.id}
-        </p>
+        <section className="room-layout">
+          <div className="watch-column">
+            <section className="card room-summary">
+              <div>
+                <p className="eyebrow">{room.isPrivate ? 'Private room' : 'Public room'}</p>
+                <h1>{room.name}</h1>
+              </div>
 
-        <p>
-          <strong>Type:</strong> {room.isPrivate ? 'Private' : 'Public'}
-        </p>
+              <div className="actions">
+                <button className="secondary" onClick={handleLeaveRoom}>
+                  Leave room
+                </button>
 
-        <p>
-          <strong>Created:</strong> {new Date(room.createdAt).toLocaleString()}
-        </p>
+                {isCurrentUserHost && (
+                  <button className="danger" onClick={handleDeleteRoom}>
+                    Delete room
+                  </button>
+                )}
+              </div>
+            </section>
 
-        {currentUserId && (
-          <p>
-            <strong>Your User Id:</strong> {currentUserId}
-          </p>
-        )}
+            <section className="video-stage" aria-label="Video player area">
+              <div className="video-placeholder">
+                <span>▶</span>
+                <p>Video will appear here</p>
+              </div>
+            </section>
+          </div>
 
-        <div className="actions">
-          <button className="secondary" onClick={handleLeaveRoom}>
-            Leave room
-          </button>
+          <aside className="room-sidebar">
+            <section className="card chat-card">
+              <h2>Chat</h2>
+              <div className="chat-messages">
+                <p className="muted">Chat messages will appear here.</p>
+              </div>
+              <form className="chat-form">
+                <input placeholder="Write a message..." type="text" />
+                <button type="button">Send</button>
+              </form>
+            </section>
 
-          {isCurrentUserHost && (
-            <button className="danger" onClick={handleDeleteRoom}>
-              Delete room
-            </button>
-          )}
-        </div>
-      </section>
-
-      <RoomMembersList members={room.members} />
-    </main>
+            <RoomMembersList currentUserId={currentUserId} members={room.members} />
+          </aside>
+        </section>
+      </main>
+    </>
   );
 }
