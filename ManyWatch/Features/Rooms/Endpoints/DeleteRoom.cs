@@ -17,7 +17,7 @@ public static class DeleteRoom
         if (room is null)
             return Results.NotFound(new { error = "Room was not found." });
         if (room.HostId != userId)
-            return Results.Forbid();
+            return Results.Json(new { error = "Only the host can delete this room." }, statusCode: StatusCodes.Status403Forbidden);
 
         db.Rooms.Remove(room);
         await db.SaveChangesAsync(cancellationToken);

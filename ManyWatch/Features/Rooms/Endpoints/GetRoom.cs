@@ -17,6 +17,6 @@ public static class GetRoom
 
         return room is null
             ? Results.NotFound(new { error = "Room was not found." })
-            : Results.Ok(room.ToResponse());
+            : Results.Ok(room.ToGetRoomResponse());
     }
 }

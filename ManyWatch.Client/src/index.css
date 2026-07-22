@@ -332,6 +332,118 @@ button:disabled {
   color: #86efac;
 }
 
+.rooms-list-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.rooms-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.rooms-toolbar .back-link {
+  margin-bottom: 0;
+}
+
+.filter-menu {
+  position: relative;
+}
+
+.filter-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-toggle.active {
+  color: #f8fafc;
+  background: #334155;
+  box-shadow: inset 0 0 0 1px #60a5fa;
+}
+
+.filter-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 20;
+  display: grid;
+  gap: 16px;
+  width: 260px;
+  border: 1px solid #1e293b;
+  border-radius: 16px;
+  padding: 20px;
+  background: #0f172a;
+  box-shadow: 0 20px 48px rgb(0 0 0 / 0.35);
+}
+
+.filter-popover label {
+  display: grid;
+  gap: 8px;
+  color: #cbd5e1;
+  font-weight: 600;
+}
+
+.filter-popover input,
+.filter-popover select {
+  border: 1px solid #334155;
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: #f8fafc;
+  background: #020617;
+}
+
+.filter-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.rooms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  transition: opacity 0.15s ease;
+}
+
+.rooms-grid.refreshing {
+  opacity: 0.6;
+}
+
+.room-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.room-item button {
+  align-self: flex-start;
+}
+
+.room-item button:disabled {
+  opacity: 1;
+  color: #94a3b8;
+  background: #1e293b;
+  cursor: default;
+}
+
+.room-item h3 {
+  margin: 4px 0 0;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
 @media (max-width: 860px) {
   .app-header,
   .room-summary {

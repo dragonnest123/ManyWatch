@@ -8,8 +8,8 @@ export function AppHeader() {
       </Link>
 
       <nav className="top-nav" aria-label="Main navigation">
-        <NavLink end to="/">
-          Home
+        <NavLink end to="/rooms">
+          Rooms
         </NavLink>
         <NavLink to="/rooms/create">Create</NavLink>
         <NavLink to="/rooms/join">Join</NavLink>

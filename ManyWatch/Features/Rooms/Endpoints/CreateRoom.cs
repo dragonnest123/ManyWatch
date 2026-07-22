@@ -15,7 +15,7 @@ public static class CreateRoom
         room.Members.Add(new RoomMember(request.HostId, room.Id, isHost: true));
         db.Rooms.Add(room);
         await db.SaveChangesAsync(cancellationToken);
-
-        return Results.Created($"/rooms/{room.Id}", room.ToResponse());
+        
+        return Results.Created($"/rooms/{room.Id}", room.ToGetRoomResponse());
     }
 }

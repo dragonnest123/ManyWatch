@@ -3,11 +3,16 @@ import { CreateRoomPage } from '../pages/CreateRoomPage';
 import { HomePage } from '../pages/HomePage';
 import { JoinRoomPage } from '../pages/JoinRoomPage';
 import { RoomPage } from '../pages/RoomPage';
+import { RoomsListPage } from '../pages/RoomsListPage';
 
 export const router = createBrowserRouter([
   {
     path: '/',
     element: <HomePage />,
+  },
+  {
+    path: '/rooms',
+    element: <RoomsListPage />,
   },
   {
     path: '/rooms/create',

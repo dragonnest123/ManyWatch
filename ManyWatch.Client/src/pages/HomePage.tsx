@@ -19,6 +19,10 @@ export function HomePage() {
             <Link className="button secondary" to="/rooms/join">
               Join room
             </Link>
+
+            <Link className="button secondary" to="/rooms">
+              Browse rooms
+            </Link>
           </div>
         </section>
       </main>

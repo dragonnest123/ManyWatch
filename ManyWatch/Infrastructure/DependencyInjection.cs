@@ -1,6 +1,5 @@
 using FluentValidation;
 using ManyWatch.Features.Rooms;
-using ManyWatch.Infrastructure.Filters;
 using ManyWatch.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 

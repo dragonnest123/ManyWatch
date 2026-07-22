@@ -1,4 +1,4 @@
-using ManyWatch.Infrastructure.Filters;
+using ManyWatch.Infrastructure.EndpointFilters;
 
 namespace ManyWatch.Features.Rooms.Endpoints;
 
@@ -6,18 +6,21 @@ public static class RoomEndpoints
 {
     extension(WebApplication app)
     {
-        public WebApplication AddRoomEndpoints()
+        public WebApplication MapRoomEndpoints()
         {
             var rooms = app.MapGroup("/rooms")
                 .WithTags("Rooms");
 
-            rooms.MapPost("/", CreateRoom.Handle)
-                .AddEndpointFilter<ValidationFilter<CreateRoomRequest>>()
-                .WithTags("CreateRoom");
+            rooms.MapGet("/", GetRooms.Handle)
+                .WithTags("GetRooms");
 
             rooms.MapGet("/{id:guid}", GetRoom.Handle)
                 .WithTags("GetRoom");
-
+            
+            rooms.MapPost("/create", CreateRoom.Handle)
+                .AddEndpointFilter<ValidationFilter<CreateRoomRequest>>()
+                .WithTags("CreateRoom");
+            
             rooms.MapPost("/{id:guid}/join/{userId:guid}", JoinRoom.Handle)
                 .WithTags("JoinRoom");
 

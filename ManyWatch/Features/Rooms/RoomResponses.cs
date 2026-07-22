@@ -1,12 +1,16 @@
 namespace ManyWatch.Features.Rooms;
 
-public sealed record RoomResponse(
+public sealed record GetRoomResponse(
     Guid Id,
-    Guid HostId,
     string Name,
     bool IsPrivate,
-    DateTime CreatedAt,
     IReadOnlyCollection<RoomMemberResponse> Members);
+
+public sealed record RoomItemResponse(
+    Guid Id,
+    string Name,
+    bool IsPrivate,
+    int MemberCount);
 
 public sealed record RoomMemberResponse(
     Guid UserId,

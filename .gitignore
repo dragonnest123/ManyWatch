@@ -3,6 +3,9 @@
 ##
 ## Get latest from `dotnet new gitignore`
 
+.claude/
+skills-lock.json
+
 # dotenv files
 .env
 

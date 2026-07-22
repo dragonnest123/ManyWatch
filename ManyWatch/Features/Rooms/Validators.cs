@@ -6,10 +6,6 @@ public sealed class CreateRoomValidator : AbstractValidator<CreateRoomRequest>
 {
     public CreateRoomValidator()
     {
-        RuleFor(request => request.HostId)
-            .NotEmpty()
-            .WithMessage("HostId is required.");
-
         RuleFor(request => request.Name)
             .NotEmpty()
             .WithMessage("Room name is required.")

@@ -1,5 +1,6 @@
 using ManyWatch.Features.Rooms.Endpoints;
 using ManyWatch.Infrastructure;
+using ManyWatch.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +15,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("Client", policy =>
     {
         policy
-            .WithOrigins("http://localhost:5173")
+            .WithOrigins("http://localhost:5173", "http://127.0.0.1:5173")
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -30,10 +31,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.AddRoomEndpoints();
+app.MapRoomEndpoints();
 app.UseCors("Client");
 
-app.AddRoomEndpoints();
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider
+        .GetRequiredService<AppDbContext>();
+
+    DbSeeder.Seed(db);
+}
 
 app.Run();
 //

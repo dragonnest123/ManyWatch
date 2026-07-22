@@ -7,7 +7,7 @@ public class Room
     public string Name { get; set; }
     public bool IsPrivate { get; set; }
     public DateTime CreatedAt { get; set; }
-    public List<RoomMember> Members { get; set; }
+    public List<RoomMember> Members { get; set; } = [];
     
     private Room()
     {
@@ -20,6 +20,5 @@ public class Room
         Name = name;
         IsPrivate = isPrivate;
         CreatedAt = DateTime.UtcNow;
-        Members = [];
     }
 }

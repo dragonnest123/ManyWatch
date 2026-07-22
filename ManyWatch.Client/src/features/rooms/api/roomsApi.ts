@@ -1,11 +1,38 @@
 import { apiRequest } from '../../../shared/httpClient';
-import type { CreateRoomRequest, Room } from '../model/types';
+import type {
+  CreateRoomRequest,
+  PagedResult,
+  PageInfo,
+  Room,
+  RoomListItem,
+  RoomsFilter,
+} from '../model/types';
 
 export function createRoom(request: CreateRoomRequest): Promise<Room> {
-  return apiRequest<Room>('/rooms', {
+  return apiRequest<Room>('/rooms/create', {
     method: 'POST',
     body: request,
   });
+}
+
+export function getRooms(
+  filter: RoomsFilter,
+  pageInfo: PageInfo,
+): Promise<PagedResult<RoomListItem>> {
+  const params = new URLSearchParams();
+
+  if (filter.name) {
+    params.set('name', filter.name);
+  }
+
+  if (filter.isPrivate !== undefined) {
+    params.set('isPrivate', String(filter.isPrivate));
+  }
+
+  params.set('pageNumber', String(pageInfo.pageNumber));
+  params.set('pageSize', String(pageInfo.pageSize));
+
+  return apiRequest<PagedResult<RoomListItem>>(`/rooms?${params.toString()}`);
 }
 
 export function getRoom(roomId: string): Promise<Room> {

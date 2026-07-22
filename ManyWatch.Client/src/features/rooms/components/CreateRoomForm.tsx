@@ -1,4 +1,4 @@
-import { FormEvent, useState } from 'react';
+import { type FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getCurrentUserId } from '../../../shared/currentUser';
 import { createRoom } from '../api/roomsApi';

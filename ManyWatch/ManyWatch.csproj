@@ -26,7 +26,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Infrastructure\Filters\" />
+      <Folder Include="Infrastructure\EndpointFilters\" />
     </ItemGroup>
 
 </Project>

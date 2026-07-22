@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace ManyWatch.Infrastructure.Filters;
+namespace ManyWatch.Infrastructure.EndpointFilters;
 
 public sealed class ValidationFilter<TRequest> : IEndpointFilter
 {

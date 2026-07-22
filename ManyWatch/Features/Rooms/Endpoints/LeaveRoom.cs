@@ -27,7 +27,7 @@ public static class LeaveRoom
         {
             await db.SaveChangesAsync(cancellationToken);
 
-            return Results.Ok(room.ToResponse());
+            return Results.Ok(room.ToGetRoomResponse());
         }
 
         var nextHost = room.Members.MinBy(x => x.JoinedAt);
