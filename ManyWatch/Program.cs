@@ -1,5 +1,7 @@
+using ManyWatch.Features.Auth.Endpoints;
 using ManyWatch.Features.Rooms.Endpoints;
 using ManyWatch.Infrastructure;
+using ManyWatch.Infrastructure.Identity;
 using ManyWatch.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,7 +19,8 @@ builder.Services.AddCors(options =>
         policy
             .WithOrigins("http://localhost:5173", "http://127.0.0.1:5173")
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -31,8 +34,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapRoomEndpoints();
 app.UseCors("Client");
+
+app.UseMiddleware<AnonymousIdentityMiddleware>();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapRoomEndpoints();
+app.MapAuthEndpoints();
 
 using (var scope = app.Services.CreateScope())
 {

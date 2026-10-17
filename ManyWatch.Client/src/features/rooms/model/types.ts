@@ -2,19 +2,23 @@ export type RoomMember = {
   userId: string;
   joinedAt: string;
   isHost: boolean;
+  isMe: boolean;
+};
+
+export type BannedMember = {
+  userId: string;
+  bannedAt: string;
 };
 
 export type Room = {
   id: string;
-  hostId: string;
   name: string;
   isPrivate: boolean;
-  createdAt: string;
   members: RoomMember[];
+  bans: BannedMember[];
 };
 
 export type CreateRoomRequest = {
-  hostId: string;
   name: string;
   isPrivate: boolean;
 };

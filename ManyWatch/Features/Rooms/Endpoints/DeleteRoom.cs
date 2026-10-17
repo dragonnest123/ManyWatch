@@ -1,3 +1,4 @@
+using ManyWatch.Infrastructure.Identity;
 using ManyWatch.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,13 +8,15 @@ public static class DeleteRoom
 {
     public static async Task<IResult> Handle(
         Guid id,
-        Guid userId,
+        HttpContext context,
         AppDbContext db,
         CancellationToken cancellationToken)
     {
+        var userId = context.GetAnonymousUserId();
+
         var room = await db.Rooms
             .FirstOrDefaultAsync(room => room.Id == id, cancellationToken);
-        
+
         if (room is null)
             return Results.NotFound(new { error = "Room was not found." });
         if (room.HostId != userId)

@@ -22,6 +22,47 @@ namespace ManyWatch.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("ManyWatch.Domain.RefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expires_at");
+
+                    b.Property<DateTime?>("RevokedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("revoked_at");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("token_hash");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_refresh_tokens");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique()
+                        .HasDatabaseName("ix_refresh_tokens_token_hash");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_refresh_tokens_user_id");
+
+                    b.ToTable("refresh_tokens", (string)null);
+                });
+
             modelBuilder.Entity("ManyWatch.Domain.Room", b =>
                 {
                     b.Property<Guid>("Id")
@@ -53,6 +94,29 @@ namespace ManyWatch.Migrations
                     b.ToTable("rooms", (string)null);
                 });
 
+            modelBuilder.Entity("ManyWatch.Domain.RoomBan", b =>
+                {
+                    b.Property<Guid>("RoomId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("room_id");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.Property<DateTime>("BannedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("banned_at");
+
+                    b.HasKey("RoomId", "UserId")
+                        .HasName("pk_room_bans");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_room_bans_user_id");
+
+                    b.ToTable("room_bans", (string)null);
+                });
+
             modelBuilder.Entity("ManyWatch.Domain.RoomMember", b =>
                 {
                     b.Property<Guid>("RoomId")
@@ -71,6 +135,10 @@ namespace ManyWatch.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("joined_at");
 
+                    b.Property<DateTime>("LastSeenAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_seen_at");
+
                     b.HasKey("RoomId", "UserId")
                         .HasName("pk_room_members");
 
@@ -78,6 +146,68 @@ namespace ManyWatch.Migrations
                         .HasDatabaseName("ix_room_members_user_id");
 
                     b.ToTable("room_members", (string)null);
+                });
+
+            modelBuilder.Entity("ManyWatch.Domain.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("display_name");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("email");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("password_hash");
+
+                    b.HasKey("Id")
+                        .HasName("pk_users");
+
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasDatabaseName("ix_users_email");
+
+                    b.ToTable("users", (string)null);
+                });
+
+            modelBuilder.Entity("ManyWatch.Domain.RefreshToken", b =>
+                {
+                    b.HasOne("ManyWatch.Domain.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_refresh_tokens_users_user_id");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ManyWatch.Domain.RoomBan", b =>
+                {
+                    b.HasOne("ManyWatch.Domain.Room", "Room")
+                        .WithMany("Bans")
+                        .HasForeignKey("RoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_room_bans_rooms_room_id");
+
+                    b.Navigation("Room");
                 });
 
             modelBuilder.Entity("ManyWatch.Domain.RoomMember", b =>
@@ -94,6 +224,8 @@ namespace ManyWatch.Migrations
 
             modelBuilder.Entity("ManyWatch.Domain.Room", b =>
                 {
+                    b.Navigation("Bans");
+
                     b.Navigation("Members");
                 });
 #pragma warning restore 612, 618

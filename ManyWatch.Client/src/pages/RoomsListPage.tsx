@@ -1,23 +1,37 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { getRooms, joinRoom } from '../features/rooms/api/roomsApi';
+import { LeaveCurrentRoomDialog } from '../features/rooms/components/LeaveCurrentRoomDialog';
 import { RoomsFilterBar } from '../features/rooms/components/RoomsFilterBar';
 import { RoomsList } from '../features/rooms/components/RoomsList';
+import { useRoomAction } from '../features/rooms/hooks/useRoomAction';
 import type { PagedResult, RoomListItem, RoomsFilter } from '../features/rooms/model/types';
 import { AppHeader } from '../shared/AppHeader';
-import { getCurrentUserId } from '../shared/currentUser';
 
 const PAGE_SIZE = 8;
 
 export function RoomsListPage() {
-  const navigate = useNavigate();
-
   const [filter, setFilter] = useState<RoomsFilter>({});
   const [pageNumber, setPageNumber] = useState(1);
   const [page, setPage] = useState<PagedResult<RoomListItem> | null>(null);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const [joiningRoomId, setJoiningRoomId] = useState<string | null>(null);
+  const {
+    pendingTarget,
+    submittingTarget,
+    currentRoomName,
+    isSubmitting,
+    error: joinError,
+    requestAction,
+    confirmAction,
+    cancelAction,
+  } = useRoomAction<{ id: string; name?: string }>({
+    execute: (target) => joinRoom(target.id),
+    errorMessage: 'Failed to join room',
+    targetRoomId: (target) => target.id,
+  });
+
+  const joiningRoomId = submittingTarget?.id ?? null;
 
   useEffect(() => {
     let isCancelled = false;
@@ -54,19 +68,11 @@ export function RoomsListPage() {
     setPageNumber(1);
   }
 
-  async function handleJoin(room: RoomListItem) {
-    setError('');
-    setJoiningRoomId(room.id);
-
-    try {
-      const currentUserId = getCurrentUserId();
-      await joinRoom(room.id, currentUserId);
-      navigate(`/rooms/${room.id}?userId=${currentUserId}`);
-    } catch (error) {
-      setError(error instanceof Error ? error.message : 'Failed to join room');
-      setJoiningRoomId(null);
-    }
+  function handleJoin(room: RoomListItem) {
+    void requestAction({ id: room.id, name: room.name });
   }
+
+  const displayedError = error || (pendingTarget ? '' : joinError);
 
   return (
     <>
@@ -81,7 +87,7 @@ export function RoomsListPage() {
           <RoomsFilterBar filter={filter} onApply={handleApplyFilter} />
         </div>
 
-        {error && <p className="error">{error}</p>}
+        {displayedError && <p className="error">{displayedError}</p>}
 
         {!page && isLoading && <p>Loading...</p>}
 
@@ -95,6 +101,23 @@ export function RoomsListPage() {
           />
         )}
       </main>
+
+      {pendingTarget && (
+        <LeaveCurrentRoomDialog
+          description={
+            <>
+              You are already in <strong>{currentRoomName}</strong>. Do you want to leave it and
+              join{' '}
+              {pendingTarget.name ? <strong>{pendingTarget.name}</strong> : 'the new room'}?
+            </>
+          }
+          confirmLabel="Leave and join"
+          isSubmitting={isSubmitting}
+          error={joinError}
+          onConfirm={() => void confirmAction()}
+          onCancel={cancelAction}
+        />
+      )}
     </>
   );
 }
