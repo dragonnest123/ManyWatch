@@ -2,10 +2,11 @@ namespace ManyWatch.Domain;
 
 public class RoomMember
 {
-    public Guid UserId { get; set; }
-    public Guid RoomId { get; set; }
-    public Room? Room { get; set; }
-    public DateTime JoinedAt { get; set; }
+    public Guid UserId { get; init; }
+    public Guid RoomId { get; init; }
+    public Room? Room { get; init; }
+    public DateTime JoinedAt { get; init; }
+    public DateTime LastSeenAt { get; set; }
     public bool IsHost { get; set; }
     
     private RoomMember()
@@ -17,6 +18,7 @@ public class RoomMember
         UserId = userId;
         RoomId = roomId;
         JoinedAt = DateTime.UtcNow;
+        LastSeenAt = DateTime.UtcNow;
         IsHost = isHost;
     }
 }

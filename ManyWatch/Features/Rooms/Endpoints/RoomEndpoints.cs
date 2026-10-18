@@ -21,13 +21,22 @@ public static class RoomEndpoints
                 .AddEndpointFilter<ValidationFilter<CreateRoomRequest>>()
                 .WithTags("CreateRoom");
             
-            rooms.MapPost("/{id:guid}/join/{userId:guid}", JoinRoom.Handle)
+            rooms.MapPost("/{id:guid}/join", JoinRoom.Handle)
                 .WithTags("JoinRoom");
 
-            rooms.MapPost("/{id:guid}/leave/{userId:guid}", LeaveRoom.Handle)
+            rooms.MapPost("/{id:guid}/leave", LeaveRoom.Handle)
                 .WithTags("LeaveRoom");
 
-            rooms.MapDelete("/{id:guid}/{userId:guid}", DeleteRoom.Handle)
+            rooms.MapPost("/{id:guid}/heartbeat", Heartbeat.Handle)
+                .WithTags("Heartbeat");
+
+            rooms.MapPost("/{id:guid}/members/{userId:guid}/ban", BanMember.Handle)
+                .WithTags("BanMember");
+
+            rooms.MapDelete("/{id:guid}/members/{userId:guid}/ban", UnbanMember.Handle)
+                .WithTags("UnbanMember");
+
+            rooms.MapDelete("/{id:guid}", DeleteRoom.Handle)
                 .WithTags("DeleteRoom");
 
             return app;

@@ -111,6 +111,55 @@ button:disabled {
   background: #1e293b;
 }
 
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.user-menu {
+  position: relative;
+}
+
+.current-user {
+  font-weight: 600;
+}
+
+.user-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 20;
+  display: grid;
+  gap: 16px;
+  width: 240px;
+  border: 1px solid #1e293b;
+  border-radius: 16px;
+  padding: 20px;
+  background: #0f172a;
+  box-shadow: 0 20px 48px rgb(0 0 0 / 0.35);
+}
+
+.profile-details {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 12px;
+  margin: 0;
+}
+
+.profile-details dt {
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.profile-details dd {
+  margin: 0;
+  overflow: hidden;
+  color: #f8fafc;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .page {
   width: min(880px, calc(100% - 48px));
   margin: 0 auto;
@@ -133,6 +182,96 @@ button:disabled {
   padding: 8px 12px;
   color: #cbd5e1;
   background: #0f172a;
+}
+
+.current-room-bar {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: min(360px, calc(100vw - 48px));
+  border: 1px solid #1e293b;
+  border-radius: 16px;
+  padding: 14px 16px;
+  background: #0f172a;
+  box-shadow: 0 20px 48px rgb(0 0 0 / 0.35);
+}
+
+.current-room-icon {
+  color: #60a5fa;
+  font-size: 18px;
+}
+
+.current-room-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.current-room-label {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.current-room-name {
+  margin: 0;
+  overflow: hidden;
+  color: #f8fafc;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.current-room-dismiss {
+  padding: 4px 8px;
+  color: #94a3b8;
+  background: transparent;
+  font-size: 16px;
+}
+
+.current-room-dismiss:hover {
+  color: #f8fafc;
+  background: #1e293b;
+}
+
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgb(2 6 23 / 0.7);
+}
+
+.dialog {
+  display: grid;
+  gap: 16px;
+  width: min(420px, 100%);
+  border: 1px solid #1e293b;
+  border-radius: 18px;
+  padding: 24px;
+  background: #0f172a;
+  box-shadow: 0 20px 48px rgb(0 0 0 / 0.35);
+}
+
+.dialog h2 {
+  margin: 0;
+}
+
+.dialog p {
+  margin: 0;
+  color: #cbd5e1;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
 }
 
 .back-link:hover {
@@ -320,12 +459,25 @@ button:disabled {
 
 .members li {
   display: flex;
+  align-items: center;
   justify-content: space-between;
   gap: 16px;
   border: 1px solid #1e293b;
   border-radius: 10px;
   padding: 12px;
   background: #020617;
+}
+
+.member-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+button.compact {
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 12px;
 }
 
 .members strong {

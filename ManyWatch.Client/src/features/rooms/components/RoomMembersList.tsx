@@ -1,11 +1,12 @@
 import type { RoomMember } from '../model/types';
 
 type Props = {
-  currentUserId: string;
   members: RoomMember[];
+  canModerate: boolean;
+  onBan: (userId: string) => void;
 };
 
-export function RoomMembersList({ currentUserId, members }: Props) {
+export function RoomMembersList({ members, canModerate, onBan }: Props) {
   return (
     <section className="card members-card">
       <h2>Members</h2>
@@ -16,8 +17,20 @@ export function RoomMembersList({ currentUserId, members }: Props) {
         <ul className="members">
           {members.map((member, index) => (
             <li key={member.userId}>
-              <span>{member.userId === currentUserId ? 'You' : `Viewer ${index + 1}`}</span>
-              {member.isHost && <strong>Host</strong>}
+              <span>{member.isMe ? 'You' : `Viewer ${index + 1}`}</span>
+
+              <span className="member-actions">
+                {member.isHost && <strong>Host</strong>}
+                {canModerate && !member.isMe && (
+                  <button
+                    className="danger compact"
+                    type="button"
+                    onClick={() => onBan(member.userId)}
+                  >
+                    Ban
+                  </button>
+                )}
+              </span>
             </li>
           ))}
         </ul>

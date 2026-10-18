@@ -17,6 +17,9 @@ public class RoomMemberConfiguration : IEntityTypeConfiguration<RoomMember>
         builder.Property(member => member.JoinedAt)
             .IsRequired();
 
+        builder.Property(member => member.LastSeenAt)
+            .IsRequired();
+
         builder.Property(member => member.IsHost)
             .IsRequired();
 

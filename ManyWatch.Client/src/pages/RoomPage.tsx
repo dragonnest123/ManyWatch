@@ -1,23 +1,30 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { deleteRoom, getRoom, leaveRoom } from '../features/rooms/api/roomsApi';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import {
+  banMember,
+  deleteRoom,
+  getRoom,
+  leaveRoom,
+  unbanMember,
+} from '../features/rooms/api/roomsApi';
+import { BannedMembersList } from '../features/rooms/components/BannedMembersList';
 import { RoomMembersList } from '../features/rooms/components/RoomMembersList';
+import { useCurrentRoom } from '../features/rooms/hooks/useCurrentRoom';
 import type { Room } from '../features/rooms/model/types';
 import { AppHeader } from '../shared/AppHeader';
-import { getCurrentUserId } from '../shared/currentUser';
 
 export function RoomPage() {
   const { roomId } = useParams();
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const currentUserId = searchParams.get('userId') ?? getCurrentUserId();
+  const { setCurrentRoom, clearCurrentRoom } = useCurrentRoom();
 
   const [room, setRoom] = useState<Room | null>(null);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [isLeaving, setIsLeaving] = useState(false);
 
-  const currentMember = room?.members.find((member) => member.userId === currentUserId);
+  const currentMember = room?.members.find((member) => member.isMe);
   const isCurrentUserHost = currentMember?.isHost ?? false;
 
   useEffect(() => {
@@ -25,48 +32,106 @@ export function RoomPage() {
       return;
     }
 
+    let isCancelled = false;
+
     async function loadRoom() {
       setError('');
       setIsLoading(true);
 
       try {
         const loadedRoom = await getRoom(roomId!);
-        setRoom(loadedRoom);
+        if (!isCancelled) {
+          setRoom(loadedRoom);
+        }
       } catch (error) {
-        setError(error instanceof Error ? error.message : 'Failed to load room');
+        if (!isCancelled) {
+          setError(error instanceof Error ? error.message : 'Failed to load room');
+        }
       } finally {
-        setIsLoading(false);
+        if (!isCancelled) {
+          setIsLoading(false);
+        }
       }
     }
 
     void loadRoom();
+
+    return () => {
+      isCancelled = true;
+    };
   }, [roomId]);
 
+  useEffect(() => {
+    const isMember = room?.members.some((member) => member.isMe);
+
+    if (isMember && room) {
+      setCurrentRoom({ id: room.id, name: room.name });
+    }
+  }, [room, setCurrentRoom]);
+
   async function handleLeaveRoom() {
-    if (!roomId || !currentUserId) {
-      setError('Current user id is missing.');
+    if (!roomId) {
       return;
     }
 
+    setIsLeaving(true);
+
     try {
-      await leaveRoom(roomId, currentUserId);
+      await leaveRoom(roomId);
+      clearCurrentRoom();
       navigate('/');
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Failed to leave room');
+    } finally {
+      setIsLeaving(false);
     }
   }
 
   async function handleDeleteRoom() {
-    if (!roomId || !currentUserId) {
-      setError('Current user id is missing.');
+    if (!roomId) {
       return;
     }
 
+    setIsLeaving(true);
+
     try {
-      await deleteRoom(roomId, currentUserId);
+      await deleteRoom(roomId);
+      clearCurrentRoom();
       navigate('/');
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Failed to delete room');
+    } finally {
+      setIsLeaving(false);
+    }
+  }
+
+  async function handleBan(userId: string) {
+    if (!roomId) {
+      return;
+    }
+
+    setError('');
+
+    try {
+      await banMember(roomId, userId);
+      setRoom(await getRoom(roomId));
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Failed to ban viewer');
+    }
+  }
+
+  async function handleUnban(userId: string) {
+    if (!roomId) {
+      return;
+    }
+
+    setError('');
+
+    try {
+      await unbanMember(roomId, userId);
+      setRoom(await getRoom(roomId));
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Failed to unban viewer');
     }
   }
 
@@ -82,21 +147,6 @@ export function RoomPage() {
     );
   }
 
-  if (error) {
-    return (
-      <>
-        <AppHeader />
-
-        <main className="page">
-          <Link className="back-link" to="/">
-            ← Back
-          </Link>
-          <p className="error">{error}</p>
-        </main>
-      </>
-    );
-  }
-
   if (!room) {
     return (
       <>
@@ -106,7 +156,7 @@ export function RoomPage() {
           <Link className="back-link" to="/">
             ← Back
           </Link>
-          <p>Room not found.</p>
+          <p className="error">{error || 'Room not found.'}</p>
         </main>
       </>
     );
@@ -121,6 +171,8 @@ export function RoomPage() {
           ← Back
         </Link>
 
+        {error && <p className="error">{error}</p>}
+
         <section className="room-layout">
           <div className="watch-column">
             <section className="card room-summary">
@@ -130,12 +182,12 @@ export function RoomPage() {
               </div>
 
               <div className="actions">
-                <button className="secondary" onClick={handleLeaveRoom}>
+                <button className="secondary" onClick={handleLeaveRoom} disabled={isLeaving}>
                   Leave room
                 </button>
 
                 {isCurrentUserHost && (
-                  <button className="danger" onClick={handleDeleteRoom}>
+                  <button className="danger" onClick={handleDeleteRoom} disabled={isLeaving}>
                     Delete room
                   </button>
                 )}
@@ -162,7 +214,15 @@ export function RoomPage() {
               </form>
             </section>
 
-            <RoomMembersList currentUserId={currentUserId} members={room.members} />
+            <RoomMembersList
+              members={room.members}
+              canModerate={isCurrentUserHost}
+              onBan={handleBan}
+            />
+
+            {isCurrentUserHost && (
+              <BannedMembersList bans={room.bans} onUnban={handleUnban} />
+            )}
           </aside>
         </section>
       </main>

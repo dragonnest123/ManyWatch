@@ -6,8 +6,10 @@ public static class RoomMapping
 {
     extension(Room room)
     {
-        public GetRoomResponse ToGetRoomResponse()
+        public GetRoomResponse ToGetRoomResponse(Guid viewerId)
         {
+            var isHost = room.HostId == viewerId;
+
             return new GetRoomResponse(
                 room.Id,
                 room.Name,
@@ -18,8 +20,15 @@ public static class RoomMapping
                     .Select(member => new RoomMemberResponse(
                         member.UserId,
                         member.JoinedAt,
-                        member.IsHost))
-                    .ToArray());
+                        member.IsHost,
+                        member.UserId == viewerId))
+                    .ToArray(),
+                isHost
+                    ? room.Bans
+                        .OrderByDescending(ban => ban.BannedAt)
+                        .Select(ban => new BannedMemberResponse(ban.UserId, ban.BannedAt))
+                        .ToArray()
+                    : []);
         }
     }
 }
