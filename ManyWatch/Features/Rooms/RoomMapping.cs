@@ -28,7 +28,22 @@ public static class RoomMapping
                         .OrderByDescending(ban => ban.BannedAt)
                         .Select(ban => new BannedMemberResponse(ban.UserId, ban.BannedAt))
                         .ToArray()
-                    : []);
+                    : [],
+                room.Playback?.ToPlaybackResponse());
+        }
+    }
+
+    extension(RoomPlayback playback)
+    {
+        public RoomPlaybackResponse ToPlaybackResponse()
+        {
+            return new RoomPlaybackResponse(
+                playback.VideoUrl,
+                playback.IsPlaying,
+                playback.GetEffectivePositionSeconds(),
+                playback.DurationSeconds,
+                playback.UpdatedAt,
+                playback.UpdatedByUserId);
         }
     }
 }

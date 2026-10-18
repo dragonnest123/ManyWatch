@@ -18,6 +18,7 @@ public static class JoinRoom
         var room = await db.Rooms
             .Include(room => room.Members)
             .Include(room => room.Bans)
+            .Include(room => room.Playback)
             .FirstOrDefaultAsync(room => room.Id == id, cancellationToken);
         if (room is null)
             return Results.NotFound(new { error = "Room was not found." });

@@ -9,6 +9,7 @@ public class Room
     public DateTime CreatedAt { get; init; }
     public List<RoomMember> Members { get; set; } = [];
     public List<RoomBan> Bans { get; set; } = [];
+    public RoomPlayback? Playback { get; set; }
     
     private Room()
     {
