@@ -5,7 +5,8 @@ public sealed record GetRoomResponse(
     string Name,
     bool IsPrivate,
     IReadOnlyCollection<RoomMemberResponse> Members,
-    IReadOnlyCollection<BannedMemberResponse> Bans);
+    IReadOnlyCollection<BannedMemberResponse> Bans,
+    RoomPlaybackResponse? Playback);
 
 public sealed record RoomItemResponse(
     Guid Id,
@@ -22,3 +23,11 @@ public sealed record RoomMemberResponse(
 public sealed record BannedMemberResponse(
     Guid UserId,
     DateTime BannedAt);
+
+public sealed record RoomPlaybackResponse(
+    string? VideoUrl,
+    bool IsPlaying,
+    double PositionSeconds,
+    double DurationSeconds,
+    DateTime UpdatedAtUtc,
+    Guid UpdatedByUserId);

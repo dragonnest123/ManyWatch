@@ -148,6 +148,43 @@ namespace ManyWatch.Migrations
                     b.ToTable("room_members", (string)null);
                 });
 
+            modelBuilder.Entity("ManyWatch.Domain.RoomPlayback", b =>
+                {
+                    b.Property<Guid>("RoomId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("room_id");
+
+                    b.Property<double>("DurationSeconds")
+                        .HasColumnType("double precision")
+                        .HasColumnName("duration_seconds");
+
+                    b.Property<bool>("IsPlaying")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_playing");
+
+                    b.Property<double>("PositionSeconds")
+                        .HasColumnType("double precision")
+                        .HasColumnName("position_seconds");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid>("UpdatedByUserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("updated_by_user_id");
+
+                    b.Property<string>("VideoUrl")
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)")
+                        .HasColumnName("video_url");
+
+                    b.HasKey("RoomId")
+                        .HasName("pk_room_playbacks");
+
+                    b.ToTable("room_playbacks", (string)null);
+                });
+
             modelBuilder.Entity("ManyWatch.Domain.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -222,11 +259,25 @@ namespace ManyWatch.Migrations
                     b.Navigation("Room");
                 });
 
+            modelBuilder.Entity("ManyWatch.Domain.RoomPlayback", b =>
+                {
+                    b.HasOne("ManyWatch.Domain.Room", "Room")
+                        .WithOne("Playback")
+                        .HasForeignKey("ManyWatch.Domain.RoomPlayback", "RoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_room_playbacks_rooms_room_id");
+
+                    b.Navigation("Room");
+                });
+
             modelBuilder.Entity("ManyWatch.Domain.Room", b =>
                 {
                     b.Navigation("Bans");
 
                     b.Navigation("Members");
+
+                    b.Navigation("Playback");
                 });
 #pragma warning restore 612, 618
         }

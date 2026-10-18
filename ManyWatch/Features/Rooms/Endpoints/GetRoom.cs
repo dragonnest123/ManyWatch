@@ -18,6 +18,7 @@ public static class GetRoom
             .AsNoTracking()
             .Include(room => room.Members)
             .Include(room => room.Bans)
+            .Include(room => room.Playback)
             .FirstOrDefaultAsync(room => room.Id == id, cancellationToken);
 
         return room is null

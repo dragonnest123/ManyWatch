@@ -414,6 +414,143 @@ button:disabled {
   color: #94a3b8;
 }
 
+.player-viewport {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 22px;
+  background: #000;
+}
+
+.player-viewport iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.player-video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  object-fit: contain;
+}
+
+.player-youtube-host {
+  width: 100%;
+  height: 100%;
+}
+
+.player-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  place-content: center;
+  gap: 12px;
+  border-radius: 22px;
+  padding: 24px;
+  color: #f8fafc;
+  background: rgb(2 6 23 / 0.62);
+  font-size: 15px;
+  font-weight: 700;
+  backdrop-filter: blur(3px);
+}
+
+.player-overlay:hover {
+  color: #f8fafc;
+  background: rgb(2 6 23 / 0.62);
+}
+
+.player-overlay-icon {
+  font-size: 32px;
+}
+
+.player-status-banner {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 4;
+  border-radius: 999px;
+  padding: 6px 14px;
+  color: #fde68a;
+  background: rgb(2 6 23 / 0.8);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.player-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.player-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.player-panel-header h2 {
+  margin: 0;
+}
+
+.connection-chip {
+  border-radius: 999px;
+  padding: 4px 12px;
+  color: #a7f3d0;
+  background: rgb(16 185 129 / 0.16);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.connection-chip.connecting,
+.connection-chip.reconnecting {
+  color: #fde68a;
+  background: rgb(245 158 11 / 0.16);
+}
+
+.connection-chip.disconnected {
+  color: #fca5a5;
+  background: rgb(239 68 68 / 0.16);
+}
+
+.video-source-form {
+  display: grid;
+  gap: 10px;
+}
+
+.video-source-form label {
+  display: grid;
+  gap: 6px;
+  color: #cbd5e1;
+  font-weight: 600;
+}
+
+.video-source-form input {
+  min-width: 0;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: #f8fafc;
+  background: #020617;
+}
+
+.player-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.player-meta-label {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .chat-card {
   display: grid;
   min-height: 420px;

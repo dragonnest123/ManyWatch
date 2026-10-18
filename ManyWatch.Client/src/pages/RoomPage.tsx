@@ -4,6 +4,7 @@ import {
   banMember,
   deleteRoom,
   getRoom,
+  joinRoom,
   leaveRoom,
   unbanMember,
 } from '../features/rooms/api/roomsApi';
@@ -11,6 +12,7 @@ import { BannedMembersList } from '../features/rooms/components/BannedMembersLis
 import { RoomMembersList } from '../features/rooms/components/RoomMembersList';
 import { useCurrentRoom } from '../features/rooms/hooks/useCurrentRoom';
 import type { Room } from '../features/rooms/model/types';
+import { RoomPlayer } from '../features/playback/components/RoomPlayer';
 import { AppHeader } from '../shared/AppHeader';
 
 export function RoomPage() {
@@ -23,9 +25,11 @@ export function RoomPage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isLeaving, setIsLeaving] = useState(false);
+  const [isJoining, setIsJoining] = useState(false);
 
   const currentMember = room?.members.find((member) => member.isMe);
   const isCurrentUserHost = currentMember?.isHost ?? false;
+  const isMember = currentMember !== undefined;
 
   useEffect(() => {
     if (!roomId) {
@@ -102,6 +106,23 @@ export function RoomPage() {
       setError(error instanceof Error ? error.message : 'Failed to delete room');
     } finally {
       setIsLeaving(false);
+    }
+  }
+
+  async function handleJoinRoom() {
+    if (!roomId) {
+      return;
+    }
+
+    setIsJoining(true);
+    setError('');
+
+    try {
+      setRoom(await joinRoom(roomId));
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Failed to join room');
+    } finally {
+      setIsJoining(false);
     }
   }
 
@@ -194,12 +215,23 @@ export function RoomPage() {
               </div>
             </section>
 
-            <section className="video-stage" aria-label="Video player area">
-              <div className="video-placeholder">
-                <span>▶</span>
-                <p>Video will appear here</p>
-              </div>
-            </section>
+            {isMember ? (
+              <RoomPlayer roomId={room.id} initialPlayback={room.playback ?? null} />
+            ) : (
+              <section className="video-stage" aria-label="Video player area">
+                <div className="video-placeholder">
+                  <span>▶</span>
+                  <p>Join the room to watch together</p>
+                  {room.isPrivate ? (
+                    <p className="muted">This is a private room. Ask the host for an invite.</p>
+                  ) : (
+                    <button type="button" onClick={() => void handleJoinRoom()} disabled={isJoining}>
+                      {isJoining ? 'Joining…' : 'Join room'}
+                    </button>
+                  )}
+                </div>
+              </section>
+            )}
           </div>
 
           <aside className="room-sidebar">

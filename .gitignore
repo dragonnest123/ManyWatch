@@ -3,8 +3,14 @@
 ##
 ## Get latest from `dotnet new gitignore`
 
+# Local AI tooling (kept out of git on purpose)
 .claude/
+.agents/
+.opencode/
+AGENTS.md
+skills/
 skills-lock.json
+opencode.json
 
 # dotenv files
 .env

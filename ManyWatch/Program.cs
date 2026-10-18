@@ -1,4 +1,6 @@
+using System.Text.Json;
 using ManyWatch.Features.Auth.Endpoints;
+using ManyWatch.Features.Rooms;
 using ManyWatch.Features.Rooms.Endpoints;
 using ManyWatch.Infrastructure;
 using ManyWatch.Infrastructure.Identity;
@@ -24,6 +26,11 @@ builder.Services.AddCors(options =>
     });
 });
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddSignalR()
+    .AddJsonProtocol(options =>
+    {
+        options.PayloadSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    });
 
 var app = builder.Build();
 
@@ -43,6 +50,7 @@ app.UseAuthorization();
 
 app.MapRoomEndpoints();
 app.MapAuthEndpoints();
+app.MapHub<RoomHub>("/hubs/rooms");
 
 using (var scope = app.Services.CreateScope())
 {

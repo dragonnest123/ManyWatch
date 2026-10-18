@@ -1,3 +1,5 @@
+import type { PlaybackStateDto } from '../../playback/model/types';
+
 export type RoomMember = {
   userId: string;
   joinedAt: string;
@@ -16,6 +18,7 @@ export type Room = {
   isPrivate: boolean;
   members: RoomMember[];
   bans: BannedMember[];
+  playback: PlaybackStateDto | null;
 };
 
 export type CreateRoomRequest = {
