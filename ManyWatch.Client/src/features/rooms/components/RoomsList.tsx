@@ -30,7 +30,11 @@ export function RoomsList({ page, joiningRoomId, isRefreshing, onJoin, onPageCha
             </div>
 
             {room.isPrivate ? (
-              <button className="secondary" disabled>
+              <button
+                className="secondary"
+                disabled
+                title="Private rooms can be joined only through their link."
+              >
                 Private
               </button>
             ) : (

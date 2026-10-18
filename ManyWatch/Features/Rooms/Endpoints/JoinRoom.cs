@@ -33,11 +33,8 @@ public static class JoinRoom
         if (alreadyJoined)
             return Results.Ok(room.ToGetRoomResponse(userId));
 
-        if (room.IsPrivate)
-            return Results.Json(
-                new { error = "This is a private room. Use the link to join it." },
-                statusCode: StatusCodes.Status403Forbidden);
-
+        // Anyone who knows the room id — e.g. by following the room link — can join,
+        // private or public. The rooms browser only disables one-click joins for private rooms.
         room.Members.Add(new RoomMember(userId, room.Id, isHost: false));
         await db.SaveChangesAsync(cancellationToken);
 

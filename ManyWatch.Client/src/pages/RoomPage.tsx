@@ -222,13 +222,12 @@ export function RoomPage() {
                 <div className="video-placeholder">
                   <span>▶</span>
                   <p>Join the room to watch together</p>
-                  {room.isPrivate ? (
-                    <p className="muted">This is a private room. Ask the host for an invite.</p>
-                  ) : (
-                    <button type="button" onClick={() => void handleJoinRoom()} disabled={isJoining}>
-                      {isJoining ? 'Joining…' : 'Join room'}
-                    </button>
+                  {room.isPrivate && (
+                    <p className="muted">This is a private room. Only people with the link can join.</p>
                   )}
+                  <button type="button" onClick={() => void handleJoinRoom()} disabled={isJoining}>
+                    {isJoining ? 'Joining…' : 'Join room'}
+                  </button>
                 </div>
               </section>
             )}
