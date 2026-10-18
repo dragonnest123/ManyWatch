@@ -18,7 +18,7 @@ public static class Refresh
             .FirstOrDefaultAsync(refreshToken => refreshToken.TokenHash == tokenHash, cancellationToken);
 
         if (existingToken?.User is null || !existingToken.IsActive)
-            return Results.Json(new { error = "Invalid or expired refresh token." }, statusCode: StatusCodes.Status401Unauthorized);
+            return Results.Json(new { error = "Invalid or expired refresh token" }, statusCode: StatusCodes.Status401Unauthorized);
 
         existingToken.RevokedAt = DateTime.UtcNow;
 

@@ -190,7 +190,7 @@ export function useRoomPlaybackSync({ roomId, enabled, onPlaybackReceived }: Opt
   const sendPlaybackUpdate = useCallback(async (update: PlaybackUpdate) => {
     const connection = connectionRef.current;
     if (!connection || connection.state !== HubConnectionState.Connected) {
-      throw new Error('Not connected to the room yet.');
+      throw new Error('Not connected to the room yet');
     }
 
     await connection.invoke('UpdatePlayback', optionsRef.current.roomId, update);
@@ -199,7 +199,7 @@ export function useRoomPlaybackSync({ roomId, enabled, onPlaybackReceived }: Opt
   const requestPlaybackState = useCallback(async () => {
     const connection = connectionRef.current;
     if (!connection || connection.state !== HubConnectionState.Connected) {
-      throw new Error('Not connected to the room yet.');
+      throw new Error('Not connected to the room yet');
     }
 
     const state = await connection.invoke<PlaybackStateDto | null>(

@@ -1,5 +1,7 @@
 import type { PlaybackStateDto } from '../../playback/model/types';
 
+export type RoomJoinPolicy = 'Everyone' | 'AuthorizedOnly';
+
 export type RoomMember = {
   userId: string;
   joinedAt: string;
@@ -16,6 +18,8 @@ export type Room = {
   id: string;
   name: string;
   isPrivate: boolean;
+  maxMembers: number | null;
+  joinPolicy: RoomJoinPolicy;
   members: RoomMember[];
   bans: BannedMember[];
   playback: PlaybackStateDto | null;
@@ -26,11 +30,19 @@ export type CreateRoomRequest = {
   isPrivate: boolean;
 };
 
+export type UpdateRoomSettingsRequest = {
+  isPrivate: boolean;
+  maxMembers: number | null;
+  joinPolicy: RoomJoinPolicy;
+};
+
 export type RoomListItem = {
   id: string;
   name: string;
   isPrivate: boolean;
   memberCount: number;
+  maxMembers: number | null;
+  joinPolicy: RoomJoinPolicy;
 };
 
 export type RoomsFilter = {

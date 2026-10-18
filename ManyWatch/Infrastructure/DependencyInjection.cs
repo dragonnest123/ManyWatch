@@ -45,6 +45,8 @@ public static class DependencyInjection
         private IServiceCollection AddFilters()
         {
             services.AddSingleton<IValidator<CreateRoomRequest>, CreateRoomValidator>();
+            services.AddSingleton<IValidator<RenameRoomRequest>, RenameRoomValidator>();
+            services.AddSingleton<IValidator<UpdateRoomSettingsRequest>, UpdateRoomSettingsValidator>();
             services.AddSingleton<IValidator<RegisterRequest>, RegisterValidator>();
             services.AddSingleton<IValidator<LoginRequest>, LoginValidator>();
 

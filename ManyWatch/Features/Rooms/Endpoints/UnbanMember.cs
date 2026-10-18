@@ -18,10 +18,10 @@ public static class UnbanMember
         var room = await db.Rooms
             .FirstOrDefaultAsync(room => room.Id == id, cancellationToken);
         if (room is null)
-            return Results.NotFound(new { error = "Room was not found." });
+            return Results.NotFound(new { error = "Room was not found" });
 
         if (room.HostId != callerId)
-            return Results.Json(new { error = "Only the host can unban members." }, statusCode: StatusCodes.Status403Forbidden);
+            return Results.Json(new { error = "Only the host can unban members" }, statusCode: StatusCodes.Status403Forbidden);
 
         var ban = await db.RoomBans
             .FirstOrDefaultAsync(ban => ban.RoomId == id && ban.UserId == userId, cancellationToken);

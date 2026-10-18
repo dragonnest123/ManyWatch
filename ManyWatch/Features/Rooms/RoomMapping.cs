@@ -13,7 +13,9 @@ public static class RoomMapping
             return new GetRoomResponse(
                 room.Id,
                 room.Name,
-                room.IsPrivate,
+                room.Settings.IsPrivate,
+                room.Settings.MaxMembers,
+                room.Settings.JoinPolicy,
                 room.Members
                     .OrderByDescending(member => member.IsHost)
                     .ThenBy(member => member.JoinedAt)

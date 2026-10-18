@@ -18,11 +18,11 @@ public static class LeaveRoom
             .Include(room => room.Members)
             .FirstOrDefaultAsync(room => room.Id == id, cancellationToken);
         if (room is null)
-            return Results.NotFound(new { error = "Room was not found." });
+            return Results.NotFound(new { error = "Room was not found" });
 
         var member = room.Members.FirstOrDefault(member => member.UserId == userId);
         if (member is null)
-            return Results.NotFound(new { error = "User is not a member of this room." });
+            return Results.NotFound(new { error = "User is not a member of this room" });
 
         room.RemoveMember(member);
         if (room.Members.Count == 0)

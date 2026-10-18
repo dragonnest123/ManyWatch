@@ -11,7 +11,7 @@ export function BannedMembersList({ bans, onUnban }: Props) {
       <h2>Banned</h2>
 
       {bans.length === 0 ? (
-        <p className="muted">No banned viewers.</p>
+        <p className="muted">No banned viewers</p>
       ) : (
         <ul className="members">
           {bans.map((ban) => (

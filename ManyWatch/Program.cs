@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using ManyWatch.Features.Auth.Endpoints;
 using ManyWatch.Features.Rooms;
 using ManyWatch.Features.Rooms.Endpoints;
@@ -14,6 +15,10 @@ var builder = WebApplication.CreateBuilder(args);
 // });
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Client", policy =>

@@ -78,10 +78,6 @@ namespace ManyWatch.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("host_id");
 
-                    b.Property<bool>("IsPrivate")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_private");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
@@ -233,6 +229,41 @@ namespace ManyWatch.Migrations
                         .HasConstraintName("fk_refresh_tokens_users_user_id");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ManyWatch.Domain.Room", b =>
+                {
+                    b.OwnsOne("ManyWatch.Domain.RoomSettings", "Settings", b1 =>
+                        {
+                            b1.Property<Guid>("RoomId")
+                                .HasColumnType("uuid")
+                                .HasColumnName("id");
+
+                            b1.Property<bool>("IsPrivate")
+                                .HasColumnType("boolean")
+                                .HasColumnName("is_private");
+
+                            b1.Property<string>("JoinPolicy")
+                                .IsRequired()
+                                .HasMaxLength(32)
+                                .HasColumnType("character varying(32)")
+                                .HasColumnName("join_policy");
+
+                            b1.Property<int?>("MaxMembers")
+                                .HasColumnType("integer")
+                                .HasColumnName("max_members");
+
+                            b1.HasKey("RoomId");
+
+                            b1.ToTable("rooms");
+
+                            b1.WithOwner()
+                                .HasForeignKey("RoomId")
+                                .HasConstraintName("fk_rooms_rooms_id");
+                        });
+
+                    b.Navigation("Settings")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ManyWatch.Domain.RoomBan", b =>

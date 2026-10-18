@@ -17,7 +17,7 @@ public class GetRooms
             .AsNoTracking()
             .Filter(filterParams)
             .OrderByDescending(room => room.CreatedAt)                                                                                                                                                            
-            .Select(room => new RoomItemResponse(room.Id, room.Name, room.IsPrivate, room.Members.Count))
+            .Select(room => new RoomItemResponse(room.Id, room.Name, room.Settings.IsPrivate, room.Members.Count, room.Settings.MaxMembers, room.Settings.JoinPolicy))
             .ToPagedResultAsync(pageInfo, cancellationToken);
         
         return Results.Ok(roomPage);

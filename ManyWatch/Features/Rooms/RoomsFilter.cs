@@ -20,7 +20,7 @@ public static class RoomsFilter
 
         private IQueryable<Room> FilterIfPrivate(RoomsFilterParameters parameters)
             => parameters.IsPrivate is not null
-                ? query.Where(r => r.IsPrivate == parameters.IsPrivate)
+                ? query.Where(r => r.Settings.IsPrivate == parameters.IsPrivate)
                 : query;
 
         private IQueryable<Room> FilterIfName(RoomsFilterParameters parameters)

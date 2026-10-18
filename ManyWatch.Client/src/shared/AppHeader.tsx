@@ -67,6 +67,7 @@ export function AppHeader() {
           <NavLink end to="/rooms">
             Rooms
           </NavLink>
+          <NavLink to="/help">Help</NavLink>
         </nav>
 
         {user ? (

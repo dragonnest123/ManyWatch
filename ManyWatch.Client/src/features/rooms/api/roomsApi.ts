@@ -6,6 +6,7 @@ import type {
   Room,
   RoomListItem,
   RoomsFilter,
+  UpdateRoomSettingsRequest,
 } from '../model/types';
 
 export function createRoom(request: CreateRoomRequest): Promise<Room> {
@@ -42,6 +43,23 @@ export function getRoom(roomId: string): Promise<Room> {
 export function joinRoom(roomId: string): Promise<Room> {
   return apiRequest<Room>(`/rooms/${roomId}/join`, {
     method: 'POST',
+  });
+}
+
+export function updateRoomSettings(
+  roomId: string,
+  request: UpdateRoomSettingsRequest,
+): Promise<Room> {
+  return apiRequest<Room>(`/rooms/${roomId}/settings`, {
+    method: 'PUT',
+    body: request,
+  });
+}
+
+export function renameRoom(roomId: string, name: string): Promise<Room> {
+  return apiRequest<Room>(`/rooms/${roomId}/name`, {
+    method: 'PUT',
+    body: { name },
   });
 }
 

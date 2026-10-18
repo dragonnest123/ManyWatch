@@ -19,7 +19,7 @@ public static class Heartbeat
                 member => member.RoomId == id && member.UserId == userId,
                 cancellationToken);
         if (member is null)
-            return Results.NotFound(new { error = "User is not a member of this room." });
+            return Results.NotFound(new { error = "User is not a member of this room" });
 
         member.LastSeenAt = DateTime.UtcNow;
         await db.SaveChangesAsync(cancellationToken);

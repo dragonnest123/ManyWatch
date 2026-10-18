@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
+import { Link } from 'react-router-dom';
 import { useRoomPlaybackSync } from '../hooks/useRoomPlaybackSync';
 import type {
   PlaybackOrigin,
@@ -88,7 +89,7 @@ export function RoomPlayer({ roomId, initialPlayback }: Props) {
       const parsed = parseVideoUrl(state.videoUrl ?? '');
       if (!parsed) {
         setError(
-          'This video link cannot be played here. Use a direct video file link or a YouTube link.',
+          'This video link cannot be played here. Use a direct video file link or a YouTube link',
         );
         return;
       }
@@ -147,7 +148,7 @@ export function RoomPlayer({ roomId, initialPlayback }: Props) {
       };
 
       void sendPlaybackUpdate(update).catch(() => {
-        setError('Playback could not be synchronized with the room. Check your connection.');
+        setError('Playback could not be synchronized with the room. Check your connection');
       });
     },
     [sendPlaybackUpdate],
@@ -174,7 +175,7 @@ export function RoomPlayer({ roomId, initialPlayback }: Props) {
 
     const parsed = parseVideoUrl(urlDraft);
     if (!parsed) {
-      setError('Enter a link to a video file (mp4/webm) or a YouTube video.');
+      setError('Enter a link to a video file (mp4/webm) or a YouTube video');
       return;
     }
 
@@ -189,7 +190,7 @@ export function RoomPlayer({ roomId, initialPlayback }: Props) {
       });
       setUrlDraft('');
     } catch {
-      setError('The video could not be changed. Check your connection and try again.');
+      setError('The video could not be changed. Check your connection and try again');
     }
   }
 
@@ -199,7 +200,7 @@ export function RoomPlayer({ roomId, initialPlayback }: Props) {
     try {
       await requestPlaybackState();
     } catch {
-      setError('Could not synchronize playback. Check your connection.');
+      setError('Could not synchronize playback. Check your connection');
     }
   }
 
@@ -298,7 +299,7 @@ export function RoomPlayer({ roomId, initialPlayback }: Props) {
           <div className="video-placeholder">
             <span>▶</span>
             <p>No video selected yet</p>
-            <p className="muted">Paste a link below to start watching together.</p>
+            <p className="muted">Paste a link below to start watching together</p>
           </div>
         )}
 
@@ -321,6 +322,10 @@ export function RoomPlayer({ roomId, initialPlayback }: Props) {
           <h2>Video</h2>
           <span className={`connection-chip ${status}`}>{STATUS_LABELS[status]}</span>
         </div>
+
+        <Link className="help-link" to="/help">
+          What can we watch together?
+        </Link>
 
         {error && <p className="error">{error}</p>}
 

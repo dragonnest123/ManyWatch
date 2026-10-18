@@ -22,7 +22,7 @@ public static class GetRoom
             .FirstOrDefaultAsync(room => room.Id == id, cancellationToken);
 
         return room is null
-            ? Results.NotFound(new { error = "Room was not found." })
+            ? Results.NotFound(new { error = "Room was not found" })
             : Results.Ok(room.ToGetRoomResponse(viewerId));
     }
 }

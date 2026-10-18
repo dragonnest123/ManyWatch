@@ -60,7 +60,7 @@ public class RoomHub : Hub
         if (playback is null)
         {
             if (videoUrl is null)
-                throw new HubException("Select a video before synchronizing playback.");
+                throw new HubException("Select a video before synchronizing playback");
 
             playback = new RoomPlayback(roomId);
             _db.RoomPlaybacks.Add(playback);
@@ -83,7 +83,7 @@ public class RoomHub : Hub
     private Guid GetUserId()
     {
         var httpContext = Context.GetHttpContext()
-            ?? throw new HubException("Anonymous identity is not available for this connection.");
+            ?? throw new HubException("Anonymous identity is not available for this connection");
 
         return httpContext.GetAnonymousUserId();
     }
@@ -94,7 +94,7 @@ public class RoomHub : Hub
             .AnyAsync(member => member.RoomId == roomId && member.UserId == userId);
 
         if (!isMember)
-            throw new HubException("You are not a member of this room.");
+            throw new HubException("You are not a member of this room");
     }
 
     private Task<RoomPlayback?> LoadPlayback(Guid roomId)
@@ -124,11 +124,11 @@ public class RoomHub : Hub
             return null;
 
         if (trimmed.Length > MaxVideoUrlLength)
-            throw new HubException($"Video URL must be {MaxVideoUrlLength} characters or fewer.");
+            throw new HubException($"Video URL must be {MaxVideoUrlLength} characters or fewer");
 
         if (!Uri.TryCreate(trimmed, UriKind.Absolute, out var uri)
             || (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
-            throw new HubException("Video URL must be a valid http(s) link.");
+            throw new HubException("Video URL must be a valid http(s) link");
 
         return trimmed;
     }

@@ -274,7 +274,7 @@ export function createYouTubePlayerController(
           callbacks.onReady();
         },
         onStateChange: (event) => handleStateChange(event.data),
-        onError: () => callbacks.onError('This YouTube video cannot be embedded. Try another link.'),
+        onError: () => callbacks.onError('This YouTube video cannot be embedded. Try another link'),
       },
     });
   });

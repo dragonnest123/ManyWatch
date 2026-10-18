@@ -20,13 +20,13 @@ public static class BanMember
             .Include(room => room.Members)
             .FirstOrDefaultAsync(room => room.Id == id, cancellationToken);
         if (room is null)
-            return Results.NotFound(new { error = "Room was not found." });
+            return Results.NotFound(new { error = "Room was not found" });
 
         if (room.HostId != callerId)
-            return Results.Json(new { error = "Only the host can ban members." }, statusCode: StatusCodes.Status403Forbidden);
+            return Results.Json(new { error = "Only the host can ban members" }, statusCode: StatusCodes.Status403Forbidden);
 
         if (userId == callerId)
-            return Results.BadRequest(new { error = "The host cannot ban themselves." });
+            return Results.BadRequest(new { error = "The host cannot ban themselves" });
 
         var member = room.Members.FirstOrDefault(member => member.UserId == userId);
         if (member is not null)

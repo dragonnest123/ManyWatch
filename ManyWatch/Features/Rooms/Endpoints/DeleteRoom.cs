@@ -18,9 +18,9 @@ public static class DeleteRoom
             .FirstOrDefaultAsync(room => room.Id == id, cancellationToken);
 
         if (room is null)
-            return Results.NotFound(new { error = "Room was not found." });
+            return Results.NotFound(new { error = "Room was not found" });
         if (room.HostId != userId)
-            return Results.Json(new { error = "Only the host can delete this room." }, statusCode: StatusCodes.Status403Forbidden);
+            return Results.Json(new { error = "Only the host can delete this room" }, statusCode: StatusCodes.Status403Forbidden);
 
         db.Rooms.Remove(room);
         await db.SaveChangesAsync(cancellationToken);

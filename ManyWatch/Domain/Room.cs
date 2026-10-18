@@ -4,26 +4,38 @@ public class Room
 {
     public Guid Id { get; init; }
     public Guid HostId { get; set; }
-    public string Name { get; init; }
-    public bool IsPrivate { get; init; }
+    public string Name { get; private set; }
+    public RoomSettings Settings { get; private set; }
     public DateTime CreatedAt { get; init; }
     public List<RoomMember> Members { get; set; } = [];
     public List<RoomBan> Bans { get; set; } = [];
     public RoomPlayback? Playback { get; set; }
-    
+
     private Room()
     {
+        Name = string.Empty;
+        Settings = new RoomSettings(isPrivate: false, maxMembers: null, joinPolicy: RoomJoinPolicy.Everyone);
     }
 
-    public Room(Guid hostId, string name, bool isPrivate)
+    public Room(
+        Guid hostId,
+        string name,
+        bool isPrivate,
+        int? maxMembers = null,
+        RoomJoinPolicy joinPolicy = RoomJoinPolicy.Everyone)
     {
         Id = Guid.CreateVersion7();
         HostId = hostId;
         Name = name;
-        IsPrivate = isPrivate;
+        Settings = new RoomSettings(isPrivate, maxMembers, joinPolicy);
         CreatedAt = DateTime.UtcNow;
     }
-    
+
+    public void Rename(string name)
+    {
+        Name = name;
+    }
+
     public void RemoveMember(RoomMember member)
     {
         Members.Remove(member);

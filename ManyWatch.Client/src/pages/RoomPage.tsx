@@ -10,8 +10,12 @@ import {
 } from '../features/rooms/api/roomsApi';
 import { BannedMembersList } from '../features/rooms/components/BannedMembersList';
 import { RoomMembersList } from '../features/rooms/components/RoomMembersList';
+import { RoomNameEditor } from '../features/rooms/components/RoomNameEditor';
+import { RoomSettingsForm } from '../features/rooms/components/RoomSettingsForm';
 import { useCurrentRoom } from '../features/rooms/hooks/useCurrentRoom';
 import type { Room } from '../features/rooms/model/types';
+import { useAuth } from '../features/auth/hooks/useAuth';
+import { buildAuthPath } from '../features/auth/model/redirects';
 import { RoomPlayer } from '../features/playback/components/RoomPlayer';
 import { AppHeader } from '../shared/AppHeader';
 
@@ -20,6 +24,7 @@ export function RoomPage() {
   const navigate = useNavigate();
 
   const { setCurrentRoom, clearCurrentRoom } = useCurrentRoom();
+  const { user } = useAuth();
 
   const [room, setRoom] = useState<Room | null>(null);
   const [error, setError] = useState('');
@@ -30,6 +35,8 @@ export function RoomPage() {
   const currentMember = room?.members.find((member) => member.isMe);
   const isCurrentUserHost = currentMember?.isHost ?? false;
   const isMember = currentMember !== undefined;
+  const isFull =
+    room !== null && room.maxMembers !== null && room.members.length >= room.maxMembers;
 
   useEffect(() => {
     if (!roomId) {
@@ -177,7 +184,7 @@ export function RoomPage() {
           <Link className="back-link" to="/">
             ← Back
           </Link>
-          <p className="error">{error || 'Room not found.'}</p>
+          <p className="error">{error || 'Room not found'}</p>
         </main>
       </>
     );
@@ -199,7 +206,11 @@ export function RoomPage() {
             <section className="card room-summary">
               <div>
                 <p className="eyebrow">{room.isPrivate ? 'Private room' : 'Public room'}</p>
-                <h1>{room.name}</h1>
+                {isCurrentUserHost ? (
+                  <RoomNameEditor room={room} onUpdated={setRoom} />
+                ) : (
+                  <h1>{room.name}</h1>
+                )}
               </div>
 
               <div className="actions">
@@ -223,21 +234,35 @@ export function RoomPage() {
                   <span>▶</span>
                   <p>Join the room to watch together</p>
                   {room.isPrivate && (
-                    <p className="muted">This is a private room. Only people with the link can join.</p>
+                    <p className="muted">This is a private room. Only people with the link can join</p>
                   )}
-                  <button type="button" onClick={() => void handleJoinRoom()} disabled={isJoining}>
-                    {isJoining ? 'Joining…' : 'Join room'}
-                  </button>
+                  {room.joinPolicy === 'AuthorizedOnly' && !user ? (
+                    <p className="muted">
+                      Only signed-in users can join.{' '}
+                      <Link to={buildAuthPath('/login', `/rooms/${room.id}`)}>Log in</Link> to
+                      enter
+                    </p>
+                  ) : isFull ? (
+                    <p className="muted">
+                      The room is full ({room.members.length}/{room.maxMembers})
+                    </p>
+                  ) : (
+                    <button type="button" onClick={() => void handleJoinRoom()} disabled={isJoining}>
+                      {isJoining ? 'Joining…' : 'Join room'}
+                    </button>
+                  )}
                 </div>
               </section>
             )}
           </div>
 
           <aside className="room-sidebar">
+            {isCurrentUserHost && <RoomSettingsForm room={room} onUpdated={setRoom} />}
+
             <section className="card chat-card">
               <h2>Chat</h2>
               <div className="chat-messages">
-                <p className="muted">Chat messages will appear here.</p>
+                <p className="muted">Chat messages will appear here</p>
               </div>
               <form className="chat-form">
                 <input placeholder="Write a message..." type="text" />
@@ -247,6 +272,7 @@ export function RoomPage() {
 
             <RoomMembersList
               members={room.members}
+              maxMembers={room.maxMembers}
               canModerate={isCurrentUserHost}
               onBan={handleBan}
             />

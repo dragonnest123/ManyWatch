@@ -30,6 +30,14 @@ public static class RoomEndpoints
             rooms.MapPost("/{id:guid}/heartbeat", Heartbeat.Handle)
                 .WithTags("Heartbeat");
 
+            rooms.MapPut("/{id:guid}/settings", UpdateRoomSettings.Handle)
+                .AddEndpointFilter<ValidationFilter<UpdateRoomSettingsRequest>>()
+                .WithTags("UpdateRoomSettings");
+
+            rooms.MapPut("/{id:guid}/name", RenameRoom.Handle)
+                .AddEndpointFilter<ValidationFilter<RenameRoomRequest>>()
+                .WithTags("RenameRoom");
+
             rooms.MapPost("/{id:guid}/members/{userId:guid}/ban", BanMember.Handle)
                 .WithTags("BanMember");
 

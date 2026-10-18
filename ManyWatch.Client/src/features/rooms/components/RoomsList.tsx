@@ -13,40 +13,50 @@ export function RoomsList({ page, joiningRoomId, isRefreshing, onJoin, onPageCha
   const pageCount = Math.max(1, Math.ceil(totalItemsCount / pageInfo.pageSize));
 
   if (items.length === 0) {
-    return <p className="muted">No rooms match your filters.</p>;
+    return <p className="muted">No rooms match your filters</p>;
   }
 
   return (
     <>
       <ul className={`rooms-grid${isRefreshing ? ' refreshing' : ''}`}>
-        {items.map((room) => (
-          <li className="card room-item" key={room.id}>
-            <div>
-              <p className="eyebrow">{room.isPrivate ? 'Private' : 'Public'}</p>
-              <h3>{room.name}</h3>
-              <p className="muted">
-                {room.memberCount} {room.memberCount === 1 ? 'member' : 'members'}
-              </p>
-            </div>
+        {items.map((room) => {
+          const isFull = room.maxMembers !== null && room.memberCount >= room.maxMembers;
 
-            {room.isPrivate ? (
-              <button
-                className="secondary"
-                disabled
-                title="Private rooms can be joined only through their link."
-              >
-                Private
-              </button>
-            ) : (
-              <button
-                disabled={joiningRoomId === room.id}
-                onClick={() => onJoin(room)}
-              >
-                {joiningRoomId === room.id ? 'Joining...' : 'Join'}
-              </button>
-            )}
-          </li>
-        ))}
+          return (
+            <li className="card room-item" key={room.id}>
+              <div>
+                <p className="eyebrow">{room.isPrivate ? 'Private' : 'Public'}</p>
+                <h3>{room.name}</h3>
+                <p className="muted">
+                  {room.maxMembers !== null
+                    ? `${room.memberCount} / ${room.maxMembers} members`
+                    : `${room.memberCount} ${room.memberCount === 1 ? 'member' : 'members'}`}
+                </p>
+                {room.joinPolicy === 'AuthorizedOnly' && (
+                  <p className="muted">Signed-in users only</p>
+                )}
+              </div>
+
+              {room.isPrivate ? (
+                <button
+                  className="secondary"
+                  disabled
+                  title="Private rooms can be joined only through their link"
+                >
+                  Private
+                </button>
+              ) : (
+                <button
+                  disabled={joiningRoomId === room.id || isFull}
+                  title={isFull ? 'The room is full' : undefined}
+                  onClick={() => onJoin(room)}
+                >
+                  {isFull ? 'Full' : joiningRoomId === room.id ? 'Joining...' : 'Join'}
+                </button>
+              )}
+            </li>
+          );
+        })}
       </ul>
 
       <div className="pagination">

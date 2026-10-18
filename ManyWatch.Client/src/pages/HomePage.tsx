@@ -9,7 +9,7 @@ export function HomePage() {
       <main className="page home-page">
         <section className="hero">
           <h1>ManyWatch</h1>
-          <p>Create a room and watch together.</p>
+          <p>Create a room and watch together</p>
 
           <div className="actions">
             <Link className="button" to="/rooms/create">

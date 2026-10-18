@@ -19,7 +19,7 @@ public static class Register
         var emailTaken = await db.Users
             .AnyAsync(user => user.Email == email, cancellationToken);
         if (emailTaken)
-            return Results.Conflict(new { error = "This email is already registered." });
+            return Results.Conflict(new { error = "This email is already registered" });
 
         var user = new User(email, passwordHash: "", request.DisplayName.Trim());
         user.PasswordHash = passwordHasher.HashPassword(user, request.Password);

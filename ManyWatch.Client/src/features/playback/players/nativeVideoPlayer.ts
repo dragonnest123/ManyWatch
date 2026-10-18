@@ -80,7 +80,7 @@ export function createNativeVideoController(
   const handleError = () => {
     if (video.error) {
       callbacks.onError(
-        'This video could not be played. Use a direct link to a video file (mp4/webm) or a YouTube link.',
+        'This video could not be played. Use a direct link to a video file (mp4/webm) or a YouTube link',
       );
     }
   };

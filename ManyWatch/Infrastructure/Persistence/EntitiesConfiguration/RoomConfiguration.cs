@@ -17,6 +17,21 @@ public class RoomConfiguration : IEntityTypeConfiguration<Room>
         builder.Property(room => room.CreatedAt)
             .IsRequired();
 
+        builder.OwnsOne(room => room.Settings, settings =>
+        {
+            settings.Property(s => s.IsPrivate)
+                .HasColumnName("is_private");
+
+            settings.Property(s => s.MaxMembers)
+                .HasColumnName("max_members");
+
+            settings.Property(s => s.JoinPolicy)
+                .HasColumnName("join_policy")
+                .HasConversion<string>()
+                .HasMaxLength(32)
+                .IsRequired();
+        });
+
         builder.HasMany(room => room.Members)
             .WithOne(member => member.Room)
             .HasForeignKey(member => member.RoomId)

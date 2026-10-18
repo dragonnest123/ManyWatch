@@ -19,11 +19,11 @@ public static class Login
         var user = await db.Users
             .FirstOrDefaultAsync(user => user.Email == email, cancellationToken);
         if (user is null)
-            return Results.Json(new { error = "Invalid email or password." }, statusCode: StatusCodes.Status401Unauthorized);
+            return Results.Json(new { error = "Invalid email or password" }, statusCode: StatusCodes.Status401Unauthorized);
 
         var verificationResult = passwordHasher.VerifyHashedPassword(user, user.PasswordHash, request.Password);
         if (verificationResult == PasswordVerificationResult.Failed)
-            return Results.Json(new { error = "Invalid email or password." }, statusCode: StatusCodes.Status401Unauthorized);
+            return Results.Json(new { error = "Invalid email or password" }, statusCode: StatusCodes.Status401Unauthorized);
 
         var (accessToken, expiresAt) = tokenService.GenerateAccessToken(user);
         var refreshToken = JwtTokenService.GenerateRefreshToken();

@@ -22,7 +22,7 @@ public sealed class ValidationFilter<TRequest> : IEndpointFilter
         if (request is null)
             return Results.BadRequest(new
             {
-                error = $"Request body of type {typeof(TRequest).Name} is required."
+                error = $"Request body of type {typeof(TRequest).Name} is required"
             });
         
         var validationResult = await _validator.ValidateAsync(
