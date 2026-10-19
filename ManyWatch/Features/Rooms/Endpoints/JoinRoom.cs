@@ -47,9 +47,7 @@ public static class JoinRoom
                 new { error = "The room is full" },
                 statusCode: StatusCodes.Status409Conflict);
         }
-
-        // Anyone who knows the room id — e.g. by following the room link — can join,
-        // private or public. The rooms browser only disables one-click joins for private rooms.
+        
         room.Members.Add(new RoomMember(userId, room.Id, isHost: false));
         await db.SaveChangesAsync(cancellationToken);
 

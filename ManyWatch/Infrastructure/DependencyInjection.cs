@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using FluentValidation;
 using ManyWatch.Domain;
 using ManyWatch.Features.Auth;
@@ -23,7 +25,9 @@ public static class DependencyInjection
                 .AddPersistence(configuration, environment)
                 .AddFilters()
                 .AddAuth(configuration)
-                .AddAnonymousIdentity();
+                .AddAnonymousIdentity()
+                .AddApi()
+                .AddRealtime();
 
             return services;
         }
@@ -93,6 +97,39 @@ public static class DependencyInjection
         {
             services.AddDataProtection();
             services.AddSingleton<AnonymousIdProtector>();
+
+            return services;
+        }
+
+        private IServiceCollection AddApi()
+        {
+            services.ConfigureHttpJsonOptions(options =>
+            {
+                options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("Client", policy =>
+                {
+                    policy
+                        .WithOrigins("http://localhost:5173", "http://127.0.0.1:5173")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                });
+            });
+
+            return services;
+        }
+
+        private IServiceCollection AddRealtime()
+        {
+            services.AddSignalR()
+                .AddJsonProtocol(options =>
+                {
+                    options.PayloadSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                });
 
             return services;
         }

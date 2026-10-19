@@ -26,8 +26,8 @@ public class ChatHubTests : IClassFixture<ManyWatchAppFactory>
         var guest = await CreateSessionAsync();
         await RoomsApi.JoinAsync(guest, room.Id);
 
-        await using var hostConnection = RoomHubClientFactory.Create(_factory, host);
-        await using var guestConnection = RoomHubClientFactory.Create(_factory, guest);
+        await using var hostConnection = RoomHubClientFactory.Create(_factory, host, RoomHubClientFactory.ChatHubPath);
+        await using var guestConnection = RoomHubClientFactory.Create(_factory, guest, RoomHubClientFactory.ChatHubPath);
 
         await hostConnection.StartAsync();
         await guestConnection.StartAsync();
@@ -58,7 +58,7 @@ public class ChatHubTests : IClassFixture<ManyWatchAppFactory>
         var stranger = await CreateSessionAsync();
         var room = await RoomsApi.CreateAsync(host, $"chat-nonmember-{Guid.NewGuid():N}");
 
-        await using var connection = RoomHubClientFactory.Create(_factory, stranger);
+        await using var connection = RoomHubClientFactory.Create(_factory, stranger, RoomHubClientFactory.ChatHubPath);
         await connection.StartAsync();
 
         var error = await Assert.ThrowsAsync<HubException>(
@@ -74,7 +74,7 @@ public class ChatHubTests : IClassFixture<ManyWatchAppFactory>
     {
         var (host, room) = await CreateRoomAsync();
 
-        await using var connection = RoomHubClientFactory.Create(_factory, host);
+        await using var connection = RoomHubClientFactory.Create(_factory, host, RoomHubClientFactory.ChatHubPath);
         await connection.StartAsync();
 
         var error = await Assert.ThrowsAsync<HubException>(
@@ -90,7 +90,7 @@ public class ChatHubTests : IClassFixture<ManyWatchAppFactory>
     {
         var (host, room) = await CreateRoomAsync();
 
-        await using var connection = RoomHubClientFactory.Create(_factory, host);
+        await using var connection = RoomHubClientFactory.Create(_factory, host, RoomHubClientFactory.ChatHubPath);
         await connection.StartAsync();
 
         var content = new string('a', ChatMessage.MaxContentLength + 1);
@@ -124,7 +124,7 @@ public class ChatHubTests : IClassFixture<ManyWatchAppFactory>
             await db.SaveChangesAsync();
         }
 
-        await using var connection = RoomHubClientFactory.Create(_factory, host);
+        await using var connection = RoomHubClientFactory.Create(_factory, host, RoomHubClientFactory.ChatHubPath);
         await connection.StartAsync();
 
         var messages = await connection.InvokeAsync<List<ChatMessageDto>>("GetMessages", room.Id);
@@ -147,7 +147,7 @@ public class ChatHubTests : IClassFixture<ManyWatchAppFactory>
         var stranger = await CreateSessionAsync();
         var room = await RoomsApi.CreateAsync(host, $"chat-history-nonmember-{Guid.NewGuid():N}");
 
-        await using var connection = RoomHubClientFactory.Create(_factory, stranger);
+        await using var connection = RoomHubClientFactory.Create(_factory, stranger, RoomHubClientFactory.ChatHubPath);
         await connection.StartAsync();
 
         var error = await Assert.ThrowsAsync<HubException>(

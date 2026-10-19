@@ -24,7 +24,7 @@ public class PlaybackHubTests : IClassFixture<ManyWatchAppFactory>
         var stranger = await CreateSessionAsync();
         var room = await RoomsApi.CreateAsync(host, $"hub-nonmember-{Guid.NewGuid():N}");
 
-        await using var connection = RoomHubClientFactory.Create(_factory, stranger);
+        await using var connection = RoomHubClientFactory.Create(_factory, stranger, RoomHubClientFactory.PlaybackHubPath);
         await connection.StartAsync();
 
         var error = await Assert.ThrowsAsync<HubException>(
@@ -40,7 +40,7 @@ public class PlaybackHubTests : IClassFixture<ManyWatchAppFactory>
     {
         var (host, room) = await CreateRoomAsync();
 
-        await using var connection = RoomHubClientFactory.Create(_factory, host);
+        await using var connection = RoomHubClientFactory.Create(_factory, host, RoomHubClientFactory.PlaybackHubPath);
         await connection.StartAsync();
 
         var playback = await connection.InvokeAsync<RoomPlaybackDto?>("JoinRoom", room.Id);
@@ -57,8 +57,8 @@ public class PlaybackHubTests : IClassFixture<ManyWatchAppFactory>
         var guest = await CreateSessionAsync();
         await RoomsApi.JoinAsync(guest, room.Id);
 
-        await using var hostConnection = RoomHubClientFactory.Create(_factory, host);
-        await using var guestConnection = RoomHubClientFactory.Create(_factory, guest);
+        await using var hostConnection = RoomHubClientFactory.Create(_factory, host, RoomHubClientFactory.PlaybackHubPath);
+        await using var guestConnection = RoomHubClientFactory.Create(_factory, guest, RoomHubClientFactory.PlaybackHubPath);
 
         var guestState = WaitForPlaybackUpdate(guestConnection);
         var hostState = WaitForPlaybackUpdate(hostConnection);
@@ -93,7 +93,7 @@ public class PlaybackHubTests : IClassFixture<ManyWatchAppFactory>
     {
         var (host, room) = await CreateRoomAsync();
 
-        await using var connection = RoomHubClientFactory.Create(_factory, host);
+        await using var connection = RoomHubClientFactory.Create(_factory, host, RoomHubClientFactory.PlaybackHubPath);
         await connection.StartAsync();
         await connection.InvokeAsync<RoomPlaybackDto?>("JoinRoom", room.Id);
 
@@ -127,7 +127,7 @@ public class PlaybackHubTests : IClassFixture<ManyWatchAppFactory>
     {
         var (host, room) = await CreateRoomAsync();
 
-        await using var connection = RoomHubClientFactory.Create(_factory, host);
+        await using var connection = RoomHubClientFactory.Create(_factory, host, RoomHubClientFactory.PlaybackHubPath);
         await connection.StartAsync();
         await connection.InvokeAsync<RoomPlaybackDto?>("JoinRoom", room.Id);
 
@@ -152,7 +152,7 @@ public class PlaybackHubTests : IClassFixture<ManyWatchAppFactory>
     {
         var (host, room) = await CreateRoomAsync();
 
-        await using var connection = RoomHubClientFactory.Create(_factory, host);
+        await using var connection = RoomHubClientFactory.Create(_factory, host, RoomHubClientFactory.PlaybackHubPath);
         await connection.StartAsync();
         await connection.InvokeAsync<RoomPlaybackDto?>("JoinRoom", room.Id);
 
@@ -177,7 +177,7 @@ public class PlaybackHubTests : IClassFixture<ManyWatchAppFactory>
     {
         var (host, room) = await CreateRoomAsync();
 
-        await using var connection = RoomHubClientFactory.Create(_factory, host);
+        await using var connection = RoomHubClientFactory.Create(_factory, host, RoomHubClientFactory.PlaybackHubPath);
         await connection.StartAsync();
         await connection.InvokeAsync<RoomPlaybackDto?>("JoinRoom", room.Id);
 

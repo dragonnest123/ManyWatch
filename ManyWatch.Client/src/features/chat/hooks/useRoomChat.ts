@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { HubConnection, HubConnectionState } from '@microsoft/signalr';
-import { createRoomHubConnection } from '../../rooms/api/roomHub';
+import { createRoomHubConnection, ROOM_CHAT_HUB_PATH } from '../../rooms/api/roomHub';
 import type { RoomConnectionStatus } from '../../playback/model/types';
 import { mergeChatMessages } from '../model/messages';
 import type { ChatMessageDto } from '../model/types';
@@ -35,7 +35,7 @@ export function useRoomChat({ roomId, enabled }: Options): Result {
       return;
     }
 
-    const connection = createRoomHubConnection();
+    const connection = createRoomHubConnection(ROOM_CHAT_HUB_PATH);
     connectionRef.current = connection;
 
     let disposed = false;
