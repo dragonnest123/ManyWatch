@@ -30,7 +30,7 @@ builder.Services.AddCors(options =>
             .AllowCredentials();
     });
 });
-builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddInfrastructure(builder.Configuration, builder.Environment);
 builder.Services.AddSignalR()
     .AddJsonProtocol(options =>
     {
@@ -62,10 +62,16 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider
         .GetRequiredService<AppDbContext>();
 
-    DbSeeder.Seed(db);
+    if (!app.Environment.IsEnvironment("Testing"))
+    {
+        DbSeeder.Seed(db);
+    }
 }
 
 app.Run();
+
+/// <summary>Entry point marker used by integration tests (WebApplicationFactory&lt;Program&gt;).</summary>
+public partial class Program;
 //
 // [JsonSerializable(typeof(Todo[]))]
 // internal partial class AppJsonSerializerContext : JsonSerializerContext

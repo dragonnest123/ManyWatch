@@ -34,13 +34,13 @@ public class RoomPlayback
         UpdatedAt = DateTime.UtcNow;
         UpdatedByUserId = updatedByUserId;
     }
-
-    public double GetEffectivePositionSeconds()
+    
+    public double GetEffectivePositionSeconds(DateTime? utcNow = null)
     {
         if (!IsPlaying)
             return PositionSeconds;
 
-        var elapsed = (DateTime.UtcNow - UpdatedAt).TotalSeconds;
+        var elapsed = ((utcNow ?? DateTime.UtcNow) - UpdatedAt).TotalSeconds;
         return Math.Max(0, PositionSeconds + elapsed);
     }
 }

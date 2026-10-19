@@ -17,10 +17,10 @@ public static class DependencyInjection
 {
     extension(IServiceCollection services)
     {
-        public IServiceCollection AddInfrastructure(IConfiguration configuration)
+        public IServiceCollection AddInfrastructure(IConfiguration configuration, IHostEnvironment environment)
         {
             services
-                .AddPersistence(configuration)
+                .AddPersistence(configuration, environment)
                 .AddFilters()
                 .AddAuth(configuration)
                 .AddAnonymousIdentity();
@@ -28,7 +28,7 @@ public static class DependencyInjection
             return services;
         }
 
-        private IServiceCollection AddPersistence(IConfiguration configuration)
+        private IServiceCollection AddPersistence(IConfiguration configuration, IHostEnvironment environment)
         {
             services.AddNpgsql<AppDbContext>(
                 configuration.GetConnectionString("DefaultConnection"),
@@ -37,7 +37,11 @@ public static class DependencyInjection
 
             services.Configure<RoomPresenceOptions>(
                 configuration.GetSection(RoomPresenceOptions.SectionName));
-            services.AddHostedService<StaleRoomMemberCleanupService>();
+
+            if (!environment.IsEnvironment("Testing"))
+            {
+                services.AddHostedService<StaleRoomMemberCleanupService>();
+            }
 
             return services;
         }

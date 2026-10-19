@@ -9,6 +9,7 @@ import type {
   RoomConnectionStatus,
 } from '../model/types';
 import { getProviderLabel, parseVideoUrl, type VideoSource } from '../model/videoSource';
+import { planPlaybackSync, snapshotPlayer } from '../model/syncPolicy';
 import { createNativeVideoController } from '../players/nativeVideoPlayer';
 import type { PlayerCallbacks, PlayerController } from '../players/types';
 import { createYouTubePlayerController } from '../players/youtubePlayer';
@@ -17,10 +18,6 @@ type Props = {
   roomId: string;
   initialPlayback: PlaybackStateDto | null;
 };
-
-const PLAY_START_TOLERANCE_SECONDS = 0.8;
-const PLAY_SYNC_TOLERANCE_SECONDS = 1.5;
-const PAUSE_TOLERANCE_SECONDS = 0.5;
 
 const STATUS_LABELS: Record<RoomConnectionStatus, string> = {
   connecting: 'Connecting…',
@@ -56,29 +53,20 @@ export function RoomPlayer({ roomId, initialPlayback }: Props) {
 
   const applyToController = useCallback(
     (controller: PlayerController, state: PlaybackState, origin: PlaybackOrigin) => {
-      const elapsed = state.isPlaying ? (Date.now() - state.receivedAtMs) / 1000 : 0;
-      const target = Math.max(0, state.positionSeconds + elapsed);
-      const drift = Math.abs(controller.currentTime() - target);
+      const plan = planPlaybackSync(state, origin, snapshotPlayer(controller), Date.now());
 
-      if (state.isPlaying) {
-        const tolerance =
-          origin === 'sync' ? PLAY_SYNC_TOLERANCE_SECONDS : PLAY_START_TOLERANCE_SECONDS;
+      // Pause before seeking (mirrors the original order: stop playback, then
+      // jump); when starting, seek to the target first and play afterwards.
+      if (plan.pause) {
+        controller.pause();
+      }
 
-        if (drift > tolerance) {
-          controller.seek(target);
-        }
+      if (plan.seek) {
+        controller.seek(plan.targetSeconds);
+      }
 
-        if (controller.isPaused()) {
-          startPlayback(controller);
-        }
-      } else {
-        if (!controller.isPaused()) {
-          controller.pause();
-        }
-
-        if (drift > PAUSE_TOLERANCE_SECONDS) {
-          controller.seek(target);
-        }
+      if (plan.play) {
+        startPlayback(controller);
       }
     },
     [startPlayback],
