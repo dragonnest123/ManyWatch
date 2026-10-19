@@ -48,4 +48,16 @@ public static class RoomMapping
                 playback.UpdatedByUserId);
         }
     }
+
+    extension(ChatMessage message)
+    {
+        public ChatMessageResponse ToChatMessageResponse()
+        {
+            return new ChatMessageResponse(
+                message.Id,
+                message.UserId,
+                message.Content,
+                message.SentAt);
+        }
+    }
 }

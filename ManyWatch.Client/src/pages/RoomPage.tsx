@@ -8,6 +8,7 @@ import {
   leaveRoom,
   unbanMember,
 } from '../features/rooms/api/roomsApi';
+import { ChatPanel } from '../features/chat/components/ChatPanel';
 import { BannedMembersList } from '../features/rooms/components/BannedMembersList';
 import { RoomMembersList } from '../features/rooms/components/RoomMembersList';
 import { RoomNameEditor } from '../features/rooms/components/RoomNameEditor';
@@ -259,16 +260,11 @@ export function RoomPage() {
           <aside className="room-sidebar">
             {isCurrentUserHost && <RoomSettingsForm room={room} onUpdated={setRoom} />}
 
-            <section className="card chat-card">
-              <h2>Chat</h2>
-              <div className="chat-messages">
-                <p className="muted">Chat messages will appear here</p>
-              </div>
-              <form className="chat-form">
-                <input placeholder="Write a message..." type="text" />
-                <button type="button">Send</button>
-              </form>
-            </section>
+            <ChatPanel
+              roomId={room.id}
+              viewerId={currentMember?.userId ?? null}
+              enabled={isMember}
+            />
 
             <RoomMembersList
               members={room.members}

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { HubConnection, HubConnectionState } from '@microsoft/signalr';
-import { createRoomHubConnection } from '../api/roomPlaybackHub';
+import { createRoomHubConnection, ROOM_PLAYBACK_HUB_PATH } from '../../rooms/api/roomHub';
 import type {
   PlaybackOrigin,
   PlaybackStateDto,
@@ -34,7 +34,7 @@ export function useRoomPlaybackSync({ roomId, enabled, onPlaybackReceived }: Opt
       return;
     }
 
-    const connection = createRoomHubConnection();
+    const connection = createRoomHubConnection(ROOM_PLAYBACK_HUB_PATH);
     connectionRef.current = connection;
 
     let disposed = false;

@@ -1,28 +1,21 @@
 using ManyWatch.Domain;
-using ManyWatch.Infrastructure.Identity;
 using ManyWatch.Infrastructure.Persistence;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
-namespace ManyWatch.Features.Rooms;
+namespace ManyWatch.Features.Rooms.Hubs;
 
-public class RoomHub : Hub
+public class RoomPlaybackHub : RoomHubBase
 {
     private const int MaxVideoUrlLength = 2048;
 
-    private readonly AppDbContext _db;
-
-    public RoomHub(AppDbContext db)
+    public RoomPlaybackHub(AppDbContext db) : base(db)
     {
-        _db = db;
     }
 
     public async Task<RoomPlaybackResponse?> JoinRoom(Guid roomId)
     {
-        var userId = GetUserId();
-        await EnsureMembership(roomId, userId);
-
-        await Groups.AddToGroupAsync(Context.ConnectionId, GroupName(roomId));
+        await JoinRoomGroupAsync(roomId);
 
         var playback = await LoadPlayback(roomId);
         return playback?.ToPlaybackResponse();
@@ -30,7 +23,7 @@ public class RoomHub : Hub
 
     public Task LeaveRoom(Guid roomId)
     {
-        return Groups.RemoveFromGroupAsync(Context.ConnectionId, GroupName(roomId));
+        return LeaveRoomGroupAsync(roomId);
     }
 
     public async Task<RoomPlaybackResponse?> RequestPlaybackState(Guid roomId)
@@ -54,7 +47,7 @@ public class RoomHub : Hub
         if (durationSeconds > 0)
             positionSeconds = Math.Min(positionSeconds, durationSeconds);
 
-        var playback = await _db.RoomPlaybacks
+        var playback = await Db.RoomPlaybacks
             .FirstOrDefaultAsync(playback => playback.RoomId == roomId);
 
         if (playback is null)
@@ -63,7 +56,7 @@ public class RoomHub : Hub
                 throw new HubException("Select a video before synchronizing playback");
 
             playback = new RoomPlayback(roomId);
-            _db.RoomPlaybacks.Add(playback);
+            Db.RoomPlaybacks.Add(playback);
         }
 
         playback.Update(
@@ -73,40 +66,18 @@ public class RoomHub : Hub
             durationSeconds,
             userId);
 
-        await _db.SaveChangesAsync();
+        await Db.SaveChangesAsync();
 
         await Clients
             .Group(GroupName(roomId))
             .SendAsync("PlaybackUpdated", playback.ToPlaybackResponse());
     }
 
-    private Guid GetUserId()
-    {
-        var httpContext = Context.GetHttpContext()
-            ?? throw new HubException("Anonymous identity is not available for this connection");
-
-        return httpContext.GetAnonymousUserId();
-    }
-
-    private async Task EnsureMembership(Guid roomId, Guid userId)
-    {
-        var isMember = await _db.RoomMembers
-            .AnyAsync(member => member.RoomId == roomId && member.UserId == userId);
-
-        if (!isMember)
-            throw new HubException("You are not a member of this room");
-    }
-
     private Task<RoomPlayback?> LoadPlayback(Guid roomId)
     {
-        return _db.RoomPlaybacks
+        return Db.RoomPlaybacks
             .AsNoTracking()
             .FirstOrDefaultAsync(playback => playback.RoomId == roomId);
-    }
-
-    private static string GroupName(Guid roomId)
-    {
-        return $"room-{roomId:N}";
     }
 
     private static double NormalizeSeconds(double value)
