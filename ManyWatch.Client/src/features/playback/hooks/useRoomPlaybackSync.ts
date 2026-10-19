@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { HubConnection, HubConnectionState } from '@microsoft/signalr';
-import { createRoomHubConnection } from '../api/roomPlaybackHub';
+import { createRoomHubConnection } from '../../rooms/api/roomHub';
 import type {
   PlaybackOrigin,
   PlaybackStateDto,

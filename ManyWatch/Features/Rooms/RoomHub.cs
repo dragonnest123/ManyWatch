@@ -9,6 +9,7 @@ namespace ManyWatch.Features.Rooms;
 public class RoomHub : Hub
 {
     private const int MaxVideoUrlLength = 2048;
+    private const int RecentMessagesCount = 100;
 
     private readonly AppDbContext _db;
 
@@ -40,6 +41,42 @@ public class RoomHub : Hub
 
         var playback = await LoadPlayback(roomId);
         return playback?.ToPlaybackResponse();
+    }
+
+    public async Task<IReadOnlyList<ChatMessageResponse>> GetMessages(Guid roomId)
+    {
+        var userId = GetUserId();
+        await EnsureMembership(roomId, userId);
+
+        var messages = await _db.ChatMessages
+            .AsNoTracking()
+            .Where(message => message.RoomId == roomId)
+            .OrderByDescending(message => message.SentAt)
+            .ThenByDescending(message => message.Id)
+            .Take(RecentMessagesCount)
+            .ToListAsync();
+
+        return messages
+            .OrderBy(message => message.SentAt)
+            .ThenBy(message => message.Id)
+            .Select(message => message.ToChatMessageResponse())
+            .ToArray();
+    }
+
+    public async Task SendMessage(Guid roomId, SendChatMessageRequest? request)
+    {
+        var userId = GetUserId();
+        await EnsureMembership(roomId, userId);
+
+        var content = NormalizeChatMessage(request?.Content);
+        var message = new ChatMessage(roomId, userId, content);
+
+        _db.ChatMessages.Add(message);
+        await _db.SaveChangesAsync();
+
+        await Clients
+            .Group(GroupName(roomId))
+            .SendAsync("ChatMessageReceived", message.ToChatMessageResponse());
     }
 
     public async Task UpdatePlayback(Guid roomId, UpdatePlaybackRequest request)
@@ -112,6 +149,19 @@ public class RoomHub : Hub
     private static double NormalizeSeconds(double value)
     {
         return double.IsFinite(value) ? Math.Max(0, value) : 0;
+    }
+
+    private static string NormalizeChatMessage(string? content)
+    {
+        var trimmed = content?.Trim();
+
+        if (string.IsNullOrEmpty(trimmed))
+            throw new HubException("Message cannot be empty");
+
+        if (trimmed.Length > ChatMessage.MaxContentLength)
+            throw new HubException($"Message must be {ChatMessage.MaxContentLength} characters or fewer");
+
+        return trimmed;
     }
 
     private static string? NormalizeVideoUrl(string? videoUrl)

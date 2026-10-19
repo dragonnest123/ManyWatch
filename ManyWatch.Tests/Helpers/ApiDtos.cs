@@ -28,6 +28,12 @@ public sealed record RoomPlaybackDto(
     DateTime UpdatedAtUtc,
     Guid UpdatedByUserId);
 
+public sealed record ChatMessageDto(
+    Guid Id,
+    Guid UserId,
+    string Content,
+    DateTime SentAtUtc);
+
 public sealed record AuthDto(
     Guid UserId,
     string Email,

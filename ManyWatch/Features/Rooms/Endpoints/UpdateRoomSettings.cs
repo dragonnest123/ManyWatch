@@ -28,7 +28,7 @@ public static class UpdateRoomSettings
                 new { error = "Only the host can change room settings" },
                 statusCode: StatusCodes.Status403Forbidden);
 
-        if (request.MaxMembers is int maxMembers && maxMembers < room.Members.Count)
+        if (request.MaxMembers is { } maxMembers && maxMembers < room.Members.Count)
         {
             return Results.BadRequest(new
             {

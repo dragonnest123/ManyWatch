@@ -9,6 +9,7 @@ public class AppDbContext : DbContext
     public DbSet<RoomMember> RoomMembers => Set<RoomMember>();
     public DbSet<RoomBan> RoomBans => Set<RoomBan>();
     public DbSet<RoomPlayback> RoomPlaybacks => Set<RoomPlayback>();
+    public DbSet<ChatMessage> ChatMessages => Set<ChatMessage>();
     public DbSet<User> Users => Set<User>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 

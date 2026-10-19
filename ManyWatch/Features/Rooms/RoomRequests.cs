@@ -19,3 +19,6 @@ public sealed record UpdatePlaybackRequest(
     bool IsPlaying,
     double PositionSeconds,
     double DurationSeconds);
+
+public sealed record SendChatMessageRequest(
+    string? Content);

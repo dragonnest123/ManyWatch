@@ -22,6 +22,40 @@ namespace ManyWatch.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("ManyWatch.Domain.ChatMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("content");
+
+                    b.Property<Guid>("RoomId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("room_id");
+
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("sent_at");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_chat_messages");
+
+                    b.HasIndex("RoomId", "SentAt")
+                        .HasDatabaseName("ix_chat_messages_room_id_sent_at");
+
+                    b.ToTable("chat_messages", (string)null);
+                });
+
             modelBuilder.Entity("ManyWatch.Domain.RefreshToken", b =>
                 {
                     b.Property<Guid>("Id")
@@ -219,6 +253,18 @@ namespace ManyWatch.Migrations
                     b.ToTable("users", (string)null);
                 });
 
+            modelBuilder.Entity("ManyWatch.Domain.ChatMessage", b =>
+                {
+                    b.HasOne("ManyWatch.Domain.Room", "Room")
+                        .WithMany("Messages")
+                        .HasForeignKey("RoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_chat_messages_rooms_room_id");
+
+                    b.Navigation("Room");
+                });
+
             modelBuilder.Entity("ManyWatch.Domain.RefreshToken", b =>
                 {
                     b.HasOne("ManyWatch.Domain.User", "User")
@@ -307,6 +353,8 @@ namespace ManyWatch.Migrations
                     b.Navigation("Bans");
 
                     b.Navigation("Members");
+
+                    b.Navigation("Messages");
 
                     b.Navigation("Playback");
                 });

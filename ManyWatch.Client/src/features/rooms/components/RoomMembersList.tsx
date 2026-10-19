@@ -1,4 +1,5 @@
 import type { RoomMember } from '../model/types';
+import { getViewerName } from '../model/viewerName';
 
 type Props = {
   members: RoomMember[];
@@ -21,9 +22,9 @@ export function RoomMembersList({ members, maxMembers, canModerate, onBan }: Pro
         <p>No members yet</p>
       ) : (
         <ul className="members">
-          {members.map((member, index) => (
+          {members.map((member) => (
             <li key={member.userId}>
-              <span>{member.isMe ? 'You' : `Viewer ${index + 1}`}</span>
+              <span>{getViewerName(member.userId, member.isMe)}</span>
 
               <span className="member-actions">
                 {member.isHost && <strong>Host</strong>}

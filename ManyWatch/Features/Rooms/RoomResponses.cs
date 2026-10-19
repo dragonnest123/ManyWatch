@@ -37,3 +37,9 @@ public sealed record RoomPlaybackResponse(
     double DurationSeconds,
     DateTime UpdatedAtUtc,
     Guid UpdatedByUserId);
+
+public sealed record ChatMessageResponse(
+    Guid Id,
+    Guid UserId,
+    string Content,
+    DateTime SentAtUtc);

@@ -10,6 +10,7 @@ public class Room
     public List<RoomMember> Members { get; set; } = [];
     public List<RoomBan> Bans { get; set; } = [];
     public RoomPlayback? Playback { get; set; }
+    public List<ChatMessage> Messages { get; set; } = [];
 
     private Room()
     {
