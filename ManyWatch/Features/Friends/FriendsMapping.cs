@@ -1,4 +1,5 @@
 using ManyWatch.Domain;
+using ManyWatch.Features.Profile;
 
 namespace ManyWatch.Features.Friends;
 
@@ -12,7 +13,8 @@ public static class FriendsMapping
                 friend.Id,
                 friend.DisplayName,
                 friend.Email,
-                friendship.RespondedAt ?? friendship.CreatedAt);
+                friendship.RespondedAt ?? friendship.CreatedAt,
+                ProfileMapping.AvatarUrl(friend));
         }
 
         public FriendRequestResponse ToFriendRequestResponse(User otherUser)
@@ -22,7 +24,8 @@ public static class FriendsMapping
                 otherUser.Id,
                 otherUser.DisplayName,
                 otherUser.Email,
-                friendship.CreatedAt);
+                friendship.CreatedAt,
+                ProfileMapping.AvatarUrl(otherUser));
         }
     }
 

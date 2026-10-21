@@ -1,5 +1,6 @@
 const ROOMS_PATH_PREFIX = '/rooms/';
 const FRIENDS_PATH = '/friends';
+const PROFILE_PATH = '/profile';
 
 export function getAuthRedirect(searchParams: URLSearchParams): string | null {
   const redirect = searchParams.get('redirect');
@@ -11,6 +12,7 @@ export function getAuthRedirect(searchParams: URLSearchParams): string | null {
   return redirect.startsWith(ROOMS_PATH_PREFIX)
     || redirect === FRIENDS_PATH
     || redirect.startsWith(`${FRIENDS_PATH}/`)
+    || redirect === PROFILE_PATH
     ? redirect
     : null;
 }

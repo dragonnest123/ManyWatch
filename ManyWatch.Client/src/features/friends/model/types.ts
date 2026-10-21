@@ -3,6 +3,7 @@ export type Friend = {
   displayName: string;
   email: string;
   friendsSince: string;
+  avatarUrl: string | null;
 };
 
 export type FriendRequest = {
@@ -11,6 +12,7 @@ export type FriendRequest = {
   displayName: string;
   email: string;
   createdAt: string;
+  avatarUrl: string | null;
 };
 
 export type FriendRequests = {
@@ -25,6 +27,7 @@ export type UserSearchResult = {
   displayName: string;
   email: string;
   relationship: FriendRelationship;
+  avatarUrl: string | null;
 };
 
 export type RoomInvitation = {

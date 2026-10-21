@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../auth/hooks/useAuth';
+import { useWatchTimeTracker } from '../../profile/hooks/useWatchTimeTracker';
 import { useRoomPlaybackSync } from '../hooks/useRoomPlaybackSync';
 import type {
   PlaybackOrigin,
@@ -27,6 +29,7 @@ const STATUS_LABELS: Record<RoomConnectionStatus, string> = {
 };
 
 export function RoomPlayer({ roomId, initialPlayback }: Props) {
+  const { user } = useAuth();
   const [source, setSource] = useState<VideoSource | null>(() =>
     initialPlayback?.videoUrl ? parseVideoUrl(initialPlayback.videoUrl) : null,
   );
@@ -42,6 +45,8 @@ export function RoomPlayer({ roomId, initialPlayback }: Props) {
   const controllerRef = useRef<PlayerController | null>(null);
   const pendingApplyRef = useRef<{ state: PlaybackState; origin: PlaybackOrigin } | null>(null);
   const initialAppliedRef = useRef(false);
+
+  useWatchTimeTracker(controllerRef, Boolean(user));
 
   // -- Playback state application ------------------------------------------
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { buildAuthPath } from '../../auth/model/redirects';
 import { useAuth } from '../../auth/hooks/useAuth';
+import { UserAvatar } from '../../../shared/UserAvatar';
 import { getFriends, sendRoomInvitation } from '../api/friendsApi';
 import type { Friend } from '../model/types';
 
@@ -94,7 +95,14 @@ export function InviteFriendsCard({ roomId, enabled }: Props) {
 
             return (
               <li key={friend.userId}>
-                <span>{friend.displayName}</span>
+                <span className="invite-friend">
+                  <UserAvatar
+                    className="friend-avatar"
+                    displayName={friend.displayName}
+                    avatarUrl={friend.avatarUrl}
+                  />
+                  <span>{friend.displayName}</span>
+                </span>
                 <button
                   type="button"
                   className={isInvited ? 'secondary compact' : 'compact'}

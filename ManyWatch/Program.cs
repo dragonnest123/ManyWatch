@@ -1,6 +1,7 @@
 using ManyWatch.Features.Auth.Endpoints;
 using ManyWatch.Features.Friends;
 using ManyWatch.Features.Friends.Endpoints;
+using ManyWatch.Features.Profile.Endpoints;
 using ManyWatch.Features.Rooms.Endpoints;
 using ManyWatch.Features.Rooms.Hubs;
 using ManyWatch.Infrastructure;
@@ -32,6 +33,7 @@ app.UseAuthorization();
 app.MapRoomEndpoints();
 app.MapAuthEndpoints();
 app.MapFriendsEndpoints();
+app.MapProfileEndpoints();
 app.MapHub<RoomPlaybackHub>("/hubs/rooms/playback");
 app.MapHub<RoomChatHub>("/hubs/rooms/chat");
 app.MapHub<FriendsHub>("/hubs/friends");

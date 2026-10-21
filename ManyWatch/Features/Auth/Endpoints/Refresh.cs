@@ -1,3 +1,4 @@
+using ManyWatch.Features.Profile;
 using ManyWatch.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -33,6 +34,6 @@ public static class Refresh
 
         await db.SaveChangesAsync(cancellationToken);
 
-        return Results.Ok(new AuthResponse(user.Id, user.Email, user.DisplayName, accessToken, newRefreshToken, expiresAt));
+        return Results.Ok(new AuthResponse(user.Id, user.Email, user.DisplayName, accessToken, newRefreshToken, expiresAt, ProfileMapping.AvatarUrl(user)));
     }
 }

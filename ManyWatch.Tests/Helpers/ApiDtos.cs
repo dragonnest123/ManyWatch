@@ -40,26 +40,46 @@ public sealed record AuthDto(
     string DisplayName,
     string AccessToken,
     string RefreshToken,
-    DateTime ExpiresAt);
+    DateTime ExpiresAt,
+    string? AvatarUrl);
 
 public sealed record MeDto(
     Guid UserId,
     string Email,
     string DisplayName,
-    DateTime CreatedAt);
+    DateTime CreatedAt,
+    string? AvatarUrl);
+
+public sealed record ProfileDto(
+    Guid UserId,
+    string Email,
+    string DisplayName,
+    string? Bio,
+    string? AvatarUrl,
+    DateTime CreatedAt,
+    long WatchedSeconds,
+    int FriendCount);
+
+public sealed record AvatarDto(
+    string AvatarUrl);
+
+public sealed record WatchTimeDto(
+    long WatchedSeconds);
 
 public sealed record FriendDto(
     Guid UserId,
     string DisplayName,
     string Email,
-    DateTime FriendsSince);
+    DateTime FriendsSince,
+    string? AvatarUrl);
 
 public sealed record FriendRequestDto(
     Guid Id,
     Guid UserId,
     string DisplayName,
     string Email,
-    DateTime CreatedAt);
+    DateTime CreatedAt,
+    string? AvatarUrl);
 
 public sealed record FriendRequestsDto(
     IReadOnlyList<FriendRequestDto> Incoming,
@@ -69,7 +89,8 @@ public sealed record UserSearchResultDto(
     Guid UserId,
     string DisplayName,
     string Email,
-    string Relationship);
+    string Relationship,
+    string? AvatarUrl);
 
 public sealed record RoomInvitationDto(
     Guid Id,

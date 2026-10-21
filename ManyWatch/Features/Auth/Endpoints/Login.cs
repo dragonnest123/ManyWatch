@@ -1,4 +1,5 @@
 using ManyWatch.Domain;
+using ManyWatch.Features.Profile;
 using ManyWatch.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -35,6 +36,6 @@ public static class Login
 
         await db.SaveChangesAsync(cancellationToken);
 
-        return Results.Ok(new AuthResponse(user.Id, user.Email, user.DisplayName, accessToken, refreshToken, expiresAt));
+        return Results.Ok(new AuthResponse(user.Id, user.Email, user.DisplayName, accessToken, refreshToken, expiresAt, ProfileMapping.AvatarUrl(user)));
     }
 }

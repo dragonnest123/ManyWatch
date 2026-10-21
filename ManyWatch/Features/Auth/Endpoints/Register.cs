@@ -1,4 +1,5 @@
 using ManyWatch.Domain;
+using ManyWatch.Features.Profile;
 using ManyWatch.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -38,6 +39,6 @@ public static class Register
 
         return Results.Created(
             "/auth/me",
-            new AuthResponse(user.Id, user.Email, user.DisplayName, accessToken, refreshToken, expiresAt));
+            new AuthResponse(user.Id, user.Email, user.DisplayName, accessToken, refreshToken, expiresAt, ProfileMapping.AvatarUrl(user)));
     }
 }

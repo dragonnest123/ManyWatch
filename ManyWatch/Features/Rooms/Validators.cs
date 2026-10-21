@@ -31,7 +31,7 @@ public sealed class UpdateRoomSettingsValidator : AbstractValidator<UpdateRoomSe
     public UpdateRoomSettingsValidator()
     {
         RuleFor(request => request.MaxMembers)
-            .InclusiveBetween(2, 500)
+            .InclusiveBetween(1, 500)
             .When(request => request.MaxMembers is not null)
             .WithMessage("Max participants must be between 2 and 500");
 

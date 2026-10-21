@@ -6,10 +6,12 @@ public sealed record AuthResponse(
     string DisplayName,
     string AccessToken,
     string RefreshToken,
-    DateTime ExpiresAt);
+    DateTime ExpiresAt,
+    string? AvatarUrl);
 
 public sealed record MeResponse(
     Guid UserId,
     string Email,
     string DisplayName,
-    DateTime CreatedAt);
+    DateTime CreatedAt,
+    string? AvatarUrl);

@@ -11,6 +11,7 @@ public class AppDbContext : DbContext
     public DbSet<RoomPlayback> RoomPlaybacks => Set<RoomPlayback>();
     public DbSet<ChatMessage> ChatMessages => Set<ChatMessage>();
     public DbSet<User> Users => Set<User>();
+    public DbSet<UserAvatar> UserAvatars => Set<UserAvatar>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<Friendship> Friendships => Set<Friendship>();
     public DbSet<RoomInvitation> RoomInvitations => Set<RoomInvitation>();
