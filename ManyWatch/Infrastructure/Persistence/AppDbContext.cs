@@ -12,6 +12,9 @@ public class AppDbContext : DbContext
     public DbSet<ChatMessage> ChatMessages => Set<ChatMessage>();
     public DbSet<User> Users => Set<User>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    public DbSet<Friendship> Friendships => Set<Friendship>();
+    public DbSet<RoomInvitation> RoomInvitations => Set<RoomInvitation>();
+    public DbSet<DirectMessage> DirectMessages => Set<DirectMessage>();
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {

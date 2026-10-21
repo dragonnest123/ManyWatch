@@ -56,6 +56,89 @@ namespace ManyWatch.Migrations
                     b.ToTable("chat_messages", (string)null);
                 });
 
+            modelBuilder.Entity("ManyWatch.Domain.DirectMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("content");
+
+                    b.Property<Guid>("RecipientId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("recipient_id");
+
+                    b.Property<Guid>("SenderId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("sender_id");
+
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("sent_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_direct_messages");
+
+                    b.HasIndex("RecipientId")
+                        .HasDatabaseName("ix_direct_messages_recipient_id");
+
+                    b.HasIndex("SenderId", "RecipientId", "SentAt")
+                        .HasDatabaseName("ix_direct_messages_sender_id_recipient_id_sent_at");
+
+                    b.ToTable("direct_messages", (string)null);
+                });
+
+            modelBuilder.Entity("ManyWatch.Domain.Friendship", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("RequestedById")
+                        .HasColumnType("uuid")
+                        .HasColumnName("requested_by_id");
+
+                    b.Property<DateTime?>("RespondedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("responded_at");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("status");
+
+                    b.Property<Guid>("UserHighId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_high_id");
+
+                    b.Property<Guid>("UserLowId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_low_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_friendships");
+
+                    b.HasIndex("UserHighId")
+                        .HasDatabaseName("ix_friendships_user_high_id");
+
+                    b.HasIndex("UserLowId", "UserHighId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_friendships_user_low_id_user_high_id");
+
+                    b.ToTable("friendships", (string)null);
+                });
+
             modelBuilder.Entity("ManyWatch.Domain.RefreshToken", b =>
                 {
                     b.Property<Guid>("Id")
@@ -145,6 +228,44 @@ namespace ManyWatch.Migrations
                         .HasDatabaseName("ix_room_bans_user_id");
 
                     b.ToTable("room_bans", (string)null);
+                });
+
+            modelBuilder.Entity("ManyWatch.Domain.RoomInvitation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("RecipientId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("recipient_id");
+
+                    b.Property<Guid>("RoomId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("room_id");
+
+                    b.Property<Guid>("SenderId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("sender_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_room_invitations");
+
+                    b.HasIndex("RoomId")
+                        .HasDatabaseName("ix_room_invitations_room_id");
+
+                    b.HasIndex("RecipientId", "CreatedAt")
+                        .HasDatabaseName("ix_room_invitations_recipient_id_created_at");
+
+                    b.HasIndex("SenderId", "RecipientId", "RoomId")
+                        .HasDatabaseName("ix_room_invitations_sender_id_recipient_id_room_id");
+
+                    b.ToTable("room_invitations", (string)null);
                 });
 
             modelBuilder.Entity("ManyWatch.Domain.RoomMember", b =>
@@ -265,6 +386,40 @@ namespace ManyWatch.Migrations
                     b.Navigation("Room");
                 });
 
+            modelBuilder.Entity("ManyWatch.Domain.DirectMessage", b =>
+                {
+                    b.HasOne("ManyWatch.Domain.User", null)
+                        .WithMany()
+                        .HasForeignKey("RecipientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_direct_messages_users_recipient_id");
+
+                    b.HasOne("ManyWatch.Domain.User", null)
+                        .WithMany()
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_direct_messages_users_sender_id");
+                });
+
+            modelBuilder.Entity("ManyWatch.Domain.Friendship", b =>
+                {
+                    b.HasOne("ManyWatch.Domain.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserHighId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_friendships_users_user_high_id");
+
+                    b.HasOne("ManyWatch.Domain.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserLowId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_friendships_users_user_low_id");
+                });
+
             modelBuilder.Entity("ManyWatch.Domain.RefreshToken", b =>
                 {
                     b.HasOne("ManyWatch.Domain.User", "User")
@@ -322,6 +477,27 @@ namespace ManyWatch.Migrations
                         .HasConstraintName("fk_room_bans_rooms_room_id");
 
                     b.Navigation("Room");
+                });
+
+            modelBuilder.Entity("ManyWatch.Domain.RoomInvitation", b =>
+                {
+                    b.HasOne("ManyWatch.Domain.Room", "Room")
+                        .WithMany()
+                        .HasForeignKey("RoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_room_invitations_rooms_room_id");
+
+                    b.HasOne("ManyWatch.Domain.User", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_room_invitations_users_sender_id");
+
+                    b.Navigation("Room");
+
+                    b.Navigation("Sender");
                 });
 
             modelBuilder.Entity("ManyWatch.Domain.RoomMember", b =>

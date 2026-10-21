@@ -1,5 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { CreateRoomPage } from '../pages/CreateRoomPage';
+import { FriendsPage } from '../pages/FriendsPage';
 import { HelpPage } from '../pages/HelpPage';
 import { HomePage } from '../pages/HomePage';
 import { JoinRoomPage } from '../pages/JoinRoomPage';
@@ -32,6 +33,10 @@ export const router = createBrowserRouter([
       {
         path: '/rooms/:roomId',
         element: <RoomPage />,
+      },
+      {
+        path: '/friends',
+        element: <FriendsPage />,
       },
       {
         path: '/help',

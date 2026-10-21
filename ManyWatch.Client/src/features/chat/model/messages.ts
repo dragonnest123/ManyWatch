@@ -1,14 +1,17 @@
-import type { ChatMessageDto } from './types';
-
 export const MAX_CHAT_MESSAGE_LENGTH = 500;
 export const MAX_VISIBLE_CHAT_MESSAGES = 200;
 
-export function mergeChatMessages(
-  current: ChatMessageDto[],
-  incoming: ChatMessageDto[],
+type TimedMessage = {
+  id: string;
+  sentAtUtc: string;
+};
+
+export function mergeChatMessages<TMessage extends TimedMessage>(
+  current: TMessage[],
+  incoming: TMessage[],
   limit = MAX_VISIBLE_CHAT_MESSAGES,
-): ChatMessageDto[] {
-  const byId = new Map<string, ChatMessageDto>();
+): TMessage[] {
+  const byId = new Map<string, TMessage>();
 
   for (const message of current) {
     byId.set(message.id, message);

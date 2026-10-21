@@ -1,11 +1,11 @@
 import { Link, useSearchParams } from 'react-router-dom';
 import { RegisterForm } from '../features/auth/components/RegisterForm';
-import { buildAuthPath, getRoomRedirect } from '../features/auth/model/redirects';
+import { buildAuthPath, getAuthRedirect } from '../features/auth/model/redirects';
 import { AppHeader } from '../shared/AppHeader';
 
 export function RegisterPage() {
   const [searchParams] = useSearchParams();
-  const redirect = getRoomRedirect(searchParams);
+  const redirect = getAuthRedirect(searchParams);
 
   return (
     <>
