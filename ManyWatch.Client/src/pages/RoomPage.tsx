@@ -11,6 +11,7 @@ import {
 import { ChatPanel } from '../features/chat/components/ChatPanel';
 import { BannedMembersList } from '../features/rooms/components/BannedMembersList';
 import { RoomMembersList } from '../features/rooms/components/RoomMembersList';
+import { InviteFriendsCard } from '../features/friends/components/InviteFriendsCard';
 import { RoomNameEditor } from '../features/rooms/components/RoomNameEditor';
 import { RoomSettingsForm } from '../features/rooms/components/RoomSettingsForm';
 import { useCurrentRoom } from '../features/rooms/hooks/useCurrentRoom';
@@ -259,6 +260,8 @@ export function RoomPage() {
 
           <aside className="room-sidebar">
             {isCurrentUserHost && <RoomSettingsForm room={room} onUpdated={setRoom} />}
+
+            <InviteFriendsCard roomId={room.id} enabled={isMember} />
 
             <ChatPanel
               roomId={room.id}

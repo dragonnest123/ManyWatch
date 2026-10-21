@@ -1,7 +1,7 @@
 import { type FormEvent, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { getRoomRedirect } from '../model/redirects';
+import { getAuthRedirect } from '../model/redirects';
 
 export function LoginForm() {
   const navigate = useNavigate();
@@ -21,7 +21,7 @@ export function LoginForm() {
 
     try {
       await login(email.trim(), password);
-      navigate(getRoomRedirect(searchParams) ?? '/rooms');
+      navigate(getAuthRedirect(searchParams) ?? '/rooms');
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Failed to log in');
     } finally {

@@ -1,7 +1,7 @@
 import { type FormEvent, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { getRoomRedirect } from '../model/redirects';
+import { getAuthRedirect } from '../model/redirects';
 
 export function RegisterForm() {
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ export function RegisterForm() {
 
     try {
       await register(email.trim(), password, displayName.trim());
-      navigate(getRoomRedirect(searchParams) ?? '/rooms');
+      navigate(getAuthRedirect(searchParams) ?? '/rooms');
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Failed to sign up');
     } finally {

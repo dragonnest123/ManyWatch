@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using FluentValidation;
 using ManyWatch.Domain;
 using ManyWatch.Features.Auth;
+using ManyWatch.Features.Friends;
 using ManyWatch.Features.Rooms;
 using ManyWatch.Infrastructure.BackgroundServices;
 using ManyWatch.Infrastructure.Configuration;
@@ -57,6 +58,8 @@ public static class DependencyInjection
             services.AddSingleton<IValidator<UpdateRoomSettingsRequest>, UpdateRoomSettingsValidator>();
             services.AddSingleton<IValidator<RegisterRequest>, RegisterValidator>();
             services.AddSingleton<IValidator<LoginRequest>, LoginValidator>();
+            services.AddSingleton<IValidator<AddFriendRequest>, AddFriendRequestValidator>();
+            services.AddSingleton<IValidator<InviteFriendRequest>, InviteFriendRequestValidator>();
 
             return services;
         }
@@ -85,6 +88,24 @@ public static class DependencyInjection
                         IssuerSigningKey = new SymmetricSecurityKey(Convert.FromBase64String(jwtOptions.Key)),
                         ValidateLifetime = true,
                         ClockSkew = TimeSpan.FromSeconds(30),
+                    };
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            // Browsers cannot attach an Authorization header to a
+                            // WebSocket handshake, so SignalR passes the JWT in the
+                            // query string instead.
+                            var accessToken = context.Request.Query["access_token"];
+
+                            if (!string.IsNullOrEmpty(accessToken)
+                                && context.HttpContext.Request.Path.StartsWithSegments("/hubs"))
+                            {
+                                context.Token = accessToken;
+                            }
+
+                            return Task.CompletedTask;
+                        }
                     };
                 });
 
