@@ -5,6 +5,7 @@ import { HelpPage } from '../pages/HelpPage';
 import { HomePage } from '../pages/HomePage';
 import { JoinRoomPage } from '../pages/JoinRoomPage';
 import { LoginPage } from '../pages/LoginPage';
+import { ProfilePage } from '../pages/ProfilePage';
 import { RegisterPage } from '../pages/RegisterPage';
 import { RoomPage } from '../pages/RoomPage';
 import { RoomsListPage } from '../pages/RoomsListPage';
@@ -37,6 +38,10 @@ export const router = createBrowserRouter([
       {
         path: '/friends',
         element: <FriendsPage />,
+      },
+      {
+        path: '/profile',
+        element: <ProfilePage />,
       },
       {
         path: '/help',

@@ -1,10 +1,16 @@
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5000';
+import { resolveApiBaseUrl } from './apiBaseUrl';
+
+export const API_BASE_URL = resolveApiBaseUrl(
+  import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5000',
+  typeof window === 'undefined' ? null : window.location.hostname,
+);
 const REFRESH_TOKEN_STORAGE_KEY = 'manywatch.refreshToken';
 
 export type SessionUser = {
   id: string;
   email: string;
   displayName: string;
+  avatarUrl: string | null;
 };
 
 let accessToken: string | null = null;
@@ -66,6 +72,7 @@ type RefreshResponse = {
   displayName: string;
   accessToken: string;
   refreshToken: string;
+  avatarUrl: string | null;
 };
 
 function isErrorResponse(value: unknown): value is ErrorResponse {
@@ -161,7 +168,12 @@ async function performRefresh(token: string): Promise<SessionUser | null> {
     const data = (await response.json()) as RefreshResponse;
     setAccessToken(data.accessToken);
     setRefreshToken(data.refreshToken);
-    return { id: data.userId, email: data.email, displayName: data.displayName };
+    return {
+      id: data.userId,
+      email: data.email,
+      displayName: data.displayName,
+      avatarUrl: data.avatarUrl ?? null,
+    };
   } catch {
     // Another concurrent refresh may have already rotated this token and stored a
     // newer, valid one — only tear down the session if ours is still the active token.

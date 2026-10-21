@@ -12,14 +12,16 @@ public sealed record FriendResponse(
     Guid UserId,
     string DisplayName,
     string Email,
-    DateTime FriendsSince);
+    DateTime FriendsSince,
+    string? AvatarUrl);
 
 public sealed record FriendRequestResponse(
     Guid Id,
     Guid UserId,
     string DisplayName,
     string Email,
-    DateTime CreatedAt);
+    DateTime CreatedAt,
+    string? AvatarUrl);
 
 public sealed record FriendRequestsResponse(
     IReadOnlyCollection<FriendRequestResponse> Incoming,
@@ -29,7 +31,8 @@ public sealed record UserSearchResultResponse(
     Guid UserId,
     string DisplayName,
     string Email,
-    FriendRelationship Relationship);
+    FriendRelationship Relationship,
+    string? AvatarUrl);
 
 public sealed record RoomInvitationResponse(
     Guid Id,

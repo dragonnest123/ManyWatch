@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { MAX_CHAT_MESSAGE_LENGTH } from '../../chat/model/messages';
 import type { RoomConnectionStatus } from '../../playback/model/types';
+import { UserAvatar } from '../../../shared/UserAvatar';
 import { useFriendChat } from '../hooks/useFriendChat';
 import type { Friend } from '../model/types';
 
@@ -77,9 +78,16 @@ export function FriendChatPanel({ friend, viewerId, onRemoveFriend }: Props) {
   return (
     <section className="card chat-card friend-chat-card" aria-label={`Chat with ${friend.displayName}`}>
       <div className="chat-header friend-chat-header">
-        <div>
-          <h2>{friend.displayName}</h2>
-          <p className="muted">{friend.email}</p>
+        <div className="friend-chat-identity">
+          <UserAvatar
+            className="friend-avatar"
+            displayName={friend.displayName}
+            avatarUrl={friend.avatarUrl}
+          />
+          <div>
+            <h2>{friend.displayName}</h2>
+            <p className="muted">{friend.email}</p>
+          </div>
         </div>
 
         <div className="friend-chat-actions">

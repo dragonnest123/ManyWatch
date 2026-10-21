@@ -343,6 +343,15 @@ namespace ManyWatch.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<DateTime?>("AvatarUpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("avatar_updated_at");
+
+                    b.Property<string>("Bio")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("bio");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
@@ -364,6 +373,12 @@ namespace ManyWatch.Migrations
                         .HasColumnType("text")
                         .HasColumnName("password_hash");
 
+                    b.Property<long>("WatchedSeconds")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasDefaultValue(0L)
+                        .HasColumnName("watched_seconds");
+
                     b.HasKey("Id")
                         .HasName("pk_users");
 
@@ -372,6 +387,33 @@ namespace ManyWatch.Migrations
                         .HasDatabaseName("ix_users_email");
 
                     b.ToTable("users", (string)null);
+                });
+
+            modelBuilder.Entity("ManyWatch.Domain.UserAvatar", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("content_type");
+
+                    b.Property<byte[]>("Data")
+                        .IsRequired()
+                        .HasColumnType("bytea")
+                        .HasColumnName("data");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("UserId")
+                        .HasName("pk_user_avatars");
+
+                    b.ToTable("user_avatars", (string)null);
                 });
 
             modelBuilder.Entity("ManyWatch.Domain.ChatMessage", b =>
@@ -522,6 +564,16 @@ namespace ManyWatch.Migrations
                         .HasConstraintName("fk_room_playbacks_rooms_room_id");
 
                     b.Navigation("Room");
+                });
+
+            modelBuilder.Entity("ManyWatch.Domain.UserAvatar", b =>
+                {
+                    b.HasOne("ManyWatch.Domain.User", null)
+                        .WithOne()
+                        .HasForeignKey("ManyWatch.Domain.UserAvatar", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_user_avatars_users_user_id");
                 });
 
             modelBuilder.Entity("ManyWatch.Domain.Room", b =>

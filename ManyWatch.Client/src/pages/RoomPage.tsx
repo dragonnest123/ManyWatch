@@ -203,41 +203,41 @@ export function RoomPage() {
 
         {error && <p className="error">{error}</p>}
 
+        <section className="room-summary">
+          <div>
+            <div className="room-meta">
+              <span className={`room-visibility ${room.isPrivate ? 'is-private' : 'is-public'}`}>
+                {room.isPrivate ? 'Private screening' : 'Open screening'}
+              </span>
+              <span className="room-meta-item">
+                {room.members.length}
+                {room.maxMembers !== null ? ` / ${room.maxMembers}` : ''}{' '}
+                {room.members.length === 1 ? 'viewer' : 'viewers'}
+              </span>
+            </div>
+
+            {isCurrentUserHost ? (
+              <RoomNameEditor room={room} onUpdated={setRoom} />
+            ) : (
+              <h1>{room.name}</h1>
+            )}
+          </div>
+
+          <div className="actions room-actions">
+            <button className="secondary" onClick={handleLeaveRoom} disabled={isLeaving}>
+              Leave room
+            </button>
+
+            {isCurrentUserHost && (
+              <button className="danger" onClick={handleDeleteRoom} disabled={isLeaving}>
+                Delete room
+              </button>
+            )}
+          </div>
+        </section>
+
         <section className="room-layout">
           <div className="watch-column">
-            <section className="room-summary">
-              <div>
-                <div className="room-meta">
-                  <span className={`room-visibility ${room.isPrivate ? 'is-private' : 'is-public'}`}>
-                    {room.isPrivate ? 'Private screening' : 'Open screening'}
-                  </span>
-                  <span className="room-meta-item">
-                    {room.members.length}
-                    {room.maxMembers !== null ? ` / ${room.maxMembers}` : ''}{' '}
-                    {room.members.length === 1 ? 'viewer' : 'viewers'}
-                  </span>
-                </div>
-
-                {isCurrentUserHost ? (
-                  <RoomNameEditor room={room} onUpdated={setRoom} />
-                ) : (
-                  <h1>{room.name}</h1>
-                )}
-              </div>
-
-              <div className="actions room-actions">
-                <button className="secondary" onClick={handleLeaveRoom} disabled={isLeaving}>
-                  Leave room
-                </button>
-
-                {isCurrentUserHost && (
-                  <button className="danger" onClick={handleDeleteRoom} disabled={isLeaving}>
-                    Delete room
-                  </button>
-                )}
-              </div>
-            </section>
-
             {isMember ? (
               <RoomPlayer roomId={room.id} initialPlayback={room.playback ?? null} />
             ) : (
@@ -269,15 +269,15 @@ export function RoomPage() {
           </div>
 
           <aside className="room-sidebar">
-            {isCurrentUserHost && <RoomSettingsForm room={room} onUpdated={setRoom} />}
-
-            <InviteFriendsCard roomId={room.id} enabled={isMember} />
-
             <ChatPanel
               roomId={room.id}
               viewerId={currentMember?.userId ?? null}
               enabled={isMember}
             />
+
+            {isCurrentUserHost && <RoomSettingsForm room={room} onUpdated={setRoom} />}
+
+            <InviteFriendsCard roomId={room.id} enabled={isMember} />
 
             <RoomMembersList
               members={room.members}

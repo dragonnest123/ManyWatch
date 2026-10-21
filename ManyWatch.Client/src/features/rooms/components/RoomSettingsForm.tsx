@@ -7,7 +7,7 @@ type Props = {
   onUpdated: (room: Room) => void;
 };
 
-const MIN_MAX_MEMBERS = 2;
+const MIN_MAX_MEMBERS = 1;
 const MAX_MAX_MEMBERS = 500;
 
 export function RoomSettingsForm({ room, onUpdated }: Props) {

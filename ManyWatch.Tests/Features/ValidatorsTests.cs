@@ -1,5 +1,6 @@
 using ManyWatch.Domain;
 using ManyWatch.Features.Auth;
+using ManyWatch.Features.Profile;
 using ManyWatch.Features.Rooms;
 
 namespace ManyWatch.Tests.Features;
@@ -40,7 +41,7 @@ public class ValidatorsTests
     }
 
     [Theory]
-    [InlineData(1)]
+    [InlineData(0)]
     [InlineData(501)]
     public void UpdateRoomSettings_MaxMembersOutOfRange_Fails(int maxMembers)
     {
@@ -51,6 +52,7 @@ public class ValidatorsTests
     }
 
     [Theory]
+    [InlineData(1)]
     [InlineData(2)]
     [InlineData(500)]
     [InlineData(null)]
@@ -70,6 +72,53 @@ public class ValidatorsTests
 
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors, error => error.ErrorMessage == "Unknown join policy");
+    }
+
+    [Fact]
+    public void UpdateProfile_LongBio_Fails()
+    {
+        var result = new UpdateProfileValidator()
+            .Validate(new UpdateProfileRequest("Viewer", new string('a', 501)));
+
+        Assert.False(result.IsValid);
+    }
+
+    [Fact]
+    public void UpdateProfile_ValidValues_Passes()
+    {
+        var result = new UpdateProfileValidator()
+            .Validate(new UpdateProfileRequest("Viewer", "About me"));
+
+        Assert.True(result.IsValid);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(301)]
+    public void RecordWatchTime_OutOfRange_Fails(long seconds)
+    {
+        var result = new RecordWatchTimeValidator()
+            .Validate(new RecordWatchTimeRequest(seconds));
+
+        Assert.False(result.IsValid);
+    }
+
+    [Fact]
+    public void RecordWatchTime_ValidValue_Passes()
+    {
+        var result = new RecordWatchTimeValidator()
+            .Validate(new RecordWatchTimeRequest(15));
+
+        Assert.True(result.IsValid);
+    }
+
+    [Fact]
+    public void UpdateAvatar_InvalidDataUrl_Fails()
+    {
+        var result = new UpdateAvatarValidator()
+            .Validate(new UpdateAvatarRequest("https://example.com/avatar.png"));
+
+        Assert.False(result.IsValid);
     }
 
     [Fact]

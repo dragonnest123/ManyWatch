@@ -306,15 +306,38 @@ public class RoomEndpointsTests : IClassFixture<ManyWatchAppFactory>
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
-    [Fact]
-    public async Task UpdateSettings_MaxMembersOutOfRange_ReturnsValidationProblem()
+    [Theory]
+    [InlineData(0)]
+    [InlineData(501)]
+    public async Task UpdateSettings_MaxMembersOutOfRange_ReturnsValidationProblem(int maxMembers)
     {
         var host = NewSession();
         var room = await RoomsApi.CreateAsync(host, $"range-{Guid.NewGuid():N}");
 
-        var response = await RoomsApi.UpdateSettingsAsync(host, room.Id, isPrivate: false, maxMembers: 1, joinPolicy: "Everyone");
+        var response = await RoomsApi.UpdateSettingsAsync(host, room.Id, isPrivate: false, maxMembers, joinPolicy: "Everyone");
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task UpdateSettings_MaxMembersOne_AllowsHostButBlocksSecondViewer()
+    {
+        var host = NewSession();
+        var guest = NewSession();
+        await guest.EnsureIdentityAsync();
+        var room = await RoomsApi.CreateAsync(host, $"solo-{Guid.NewGuid():N}");
+
+        var settingsResponse = await RoomsApi.UpdateSettingsAsync(
+            host,
+            room.Id,
+            isPrivate: false,
+            maxMembers: 1,
+            joinPolicy: "Everyone");
+        Assert.Equal(HttpStatusCode.OK, settingsResponse.StatusCode);
+
+        var joinResponse = await RoomsApi.TryJoinAsync(guest, room.Id);
+
+        Assert.Equal(HttpStatusCode.Conflict, joinResponse.StatusCode);
     }
 
     [Fact]

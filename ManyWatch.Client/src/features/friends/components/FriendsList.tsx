@@ -1,3 +1,4 @@
+import { UserAvatar } from '../../../shared/UserAvatar';
 import type { Friend } from '../model/types';
 
 type Props = {
@@ -25,9 +26,11 @@ export function FriendsList({ friends, selectedFriendId, onSelect }: Props) {
                 aria-pressed={friend.userId === selectedFriendId}
                 onClick={() => onSelect(friend)}
               >
-                <span className="friend-avatar" aria-hidden="true">
-                  {getInitial(friend.displayName)}
-                </span>
+                <UserAvatar
+                  className="friend-avatar"
+                  displayName={friend.displayName}
+                  avatarUrl={friend.avatarUrl}
+                />
                 <span className="friend-info">
                   <strong>{friend.displayName}</strong>
                   <span className="muted">{friend.email}</span>
@@ -41,6 +44,3 @@ export function FriendsList({ friends, selectedFriendId, onSelect }: Props) {
   );
 }
 
-function getInitial(displayName: string): string {
-  return displayName.trim().charAt(0).toUpperCase() || '?';
-}

@@ -4,6 +4,7 @@ using FluentValidation;
 using ManyWatch.Domain;
 using ManyWatch.Features.Auth;
 using ManyWatch.Features.Friends;
+using ManyWatch.Features.Profile;
 using ManyWatch.Features.Rooms;
 using ManyWatch.Infrastructure.BackgroundServices;
 using ManyWatch.Infrastructure.Configuration;
@@ -60,6 +61,9 @@ public static class DependencyInjection
             services.AddSingleton<IValidator<LoginRequest>, LoginValidator>();
             services.AddSingleton<IValidator<AddFriendRequest>, AddFriendRequestValidator>();
             services.AddSingleton<IValidator<InviteFriendRequest>, InviteFriendRequestValidator>();
+            services.AddSingleton<IValidator<UpdateProfileRequest>, UpdateProfileValidator>();
+            services.AddSingleton<IValidator<UpdateAvatarRequest>, UpdateAvatarValidator>();
+            services.AddSingleton<IValidator<RecordWatchTimeRequest>, RecordWatchTimeValidator>();
 
             return services;
         }

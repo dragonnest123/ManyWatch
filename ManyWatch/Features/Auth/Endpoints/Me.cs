@@ -1,20 +1,31 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
+using ManyWatch.Features.Profile;
+using ManyWatch.Infrastructure.Identity;
+using ManyWatch.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace ManyWatch.Features.Auth.Endpoints;
 
 public static class Me
 {
-    public static IResult Handle(ClaimsPrincipal user)
+    public static async Task<IResult> Handle(
+        HttpContext context,
+        AppDbContext db,
+        CancellationToken cancellationToken)
     {
-        var userId = user.FindFirstValue(JwtRegisteredClaimNames.Sub);
-        var email = user.FindFirstValue(JwtRegisteredClaimNames.Email);
-        var displayName = user.FindFirstValue(JwtRegisteredClaimNames.Name);
-        var createdAt = user.FindFirstValue("created_at");
+        var userId = context.User.GetAccountUserId();
 
-        if (userId is null || email is null || displayName is null || createdAt is null)
+        var user = await db.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(user => user.Id == userId, cancellationToken);
+
+        if (user is null)
             return Results.Unauthorized();
 
-        return Results.Ok(new MeResponse(Guid.Parse(userId), email, displayName, DateTime.Parse(createdAt, null, System.Globalization.DateTimeStyles.RoundtripKind)));
+        return Results.Ok(new MeResponse(
+            user.Id,
+            user.Email,
+            user.DisplayName,
+            user.CreatedAt,
+            ProfileMapping.AvatarUrl(user)));
     }
 }

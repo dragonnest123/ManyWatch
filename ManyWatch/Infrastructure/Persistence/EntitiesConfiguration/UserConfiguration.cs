@@ -22,7 +22,14 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(user => user.DisplayName)
             .IsRequired()
-            .HasMaxLength(64);
+            .HasMaxLength(User.MaxDisplayNameLength);
+
+        builder.Property(user => user.Bio)
+            .HasMaxLength(User.MaxBioLength);
+
+        builder.Property(user => user.WatchedSeconds)
+            .IsRequired()
+            .HasDefaultValue(0L);
 
         builder.Property(user => user.CreatedAt)
             .IsRequired();

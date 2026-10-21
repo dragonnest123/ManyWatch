@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import {
   getRefreshToken,
   refreshSession,
@@ -8,7 +8,7 @@ import {
 } from '../../../shared/httpClient';
 import * as authApi from '../api/authApi';
 import type { AuthResponse, AuthUser } from '../model/types';
-import { AuthContext } from './authContextInstance';
+import { AuthContext, type AuthUserPatch } from './authContextInstance';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -17,7 +17,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   function applySession(response: AuthResponse) {
     setAccessToken(response.accessToken);
     setRefreshToken(response.refreshToken);
-    setUser({ id: response.userId, email: response.email, displayName: response.displayName });
+    setUser({
+      id: response.userId,
+      email: response.email,
+      displayName: response.displayName,
+      avatarUrl: response.avatarUrl ?? null,
+    });
   }
 
   function clearSession() {
@@ -64,8 +69,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  const updateUser = useCallback((patch: AuthUserPatch) => {
+    setUser((current) => (current ? { ...current, ...patch } : current));
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, login, register, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

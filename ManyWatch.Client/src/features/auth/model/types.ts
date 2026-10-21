@@ -2,6 +2,7 @@ export type AuthUser = {
   id: string;
   email: string;
   displayName: string;
+  avatarUrl: string | null;
 };
 
 export type RegisterRequest = {
@@ -22,6 +23,7 @@ export type AuthResponse = {
   accessToken: string;
   refreshToken: string;
   expiresAt: string;
+  avatarUrl: string | null;
 };
 
 export type MeResponse = {
@@ -29,4 +31,5 @@ export type MeResponse = {
   email: string;
   displayName: string;
   createdAt: string;
+  avatarUrl: string | null;
 };

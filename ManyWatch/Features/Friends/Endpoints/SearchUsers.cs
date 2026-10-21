@@ -1,4 +1,5 @@
 using ManyWatch.Domain;
+using ManyWatch.Features.Profile;
 using ManyWatch.Infrastructure.Identity;
 using ManyWatch.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -44,7 +45,8 @@ public static class SearchUsers
                 user.Id,
                 user.DisplayName,
                 user.Email,
-                GetRelationship(friendshipsByUserId.GetValueOrDefault(user.Id), userId)))
+                GetRelationship(friendshipsByUserId.GetValueOrDefault(user.Id), userId),
+                ProfileMapping.AvatarUrl(user)))
             .ToArray();
 
         return Results.Ok(results);

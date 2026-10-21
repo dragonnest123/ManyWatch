@@ -4,6 +4,7 @@ import * as authApi from '../features/auth/api/authApi';
 import { useAuth } from '../features/auth/hooks/useAuth';
 import type { MeResponse } from '../features/auth/model/types';
 import { useCurrentRoom } from '../features/rooms/hooks/useCurrentRoom';
+import { UserAvatar } from './UserAvatar';
 
 export function AppHeader() {
   const { user, logout } = useAuth();
@@ -85,9 +86,11 @@ export function AppHeader() {
               onClick={handleToggleMenu}
               aria-expanded={isMenuOpen}
             >
-              <span className="user-avatar" aria-hidden="true">
-                {getInitial(user.displayName)}
-              </span>
+              <UserAvatar
+                className="user-avatar"
+                displayName={user.displayName}
+                avatarUrl={user.avatarUrl}
+              />
               <span className="user-name">{user.displayName}</span>
             </button>
 
@@ -103,6 +106,14 @@ export function AppHeader() {
                     <dd>{new Date(profile.createdAt).toLocaleDateString()}</dd>
                   </dl>
                 )}
+
+                <Link
+                  className="profile-link"
+                  to="/profile"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  View profile
+                </Link>
 
                 <button className="danger" type="button" onClick={handleLogout}>
                   Log out
@@ -123,6 +134,3 @@ export function AppHeader() {
   );
 }
 
-function getInitial(displayName: string): string {
-  return displayName.trim().charAt(0).toUpperCase() || '?';
-}

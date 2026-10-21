@@ -1,3 +1,4 @@
+import { UserAvatar } from '../../../shared/UserAvatar';
 import type { FriendRequest, FriendRequests } from '../model/types';
 
 type Props = {
@@ -76,9 +77,16 @@ export function FriendRequestsList({ requests, onAccept, onDecline, onCancel }: 
 
 function RequestUser({ request }: { request: FriendRequest }) {
   return (
-    <span className="search-result-info">
-      <strong>{request.displayName}</strong>
-      <span className="muted">{request.email}</span>
+    <span className="search-result-user">
+      <UserAvatar
+        className="friend-avatar"
+        displayName={request.displayName}
+        avatarUrl={request.avatarUrl}
+      />
+      <span className="search-result-info">
+        <strong>{request.displayName}</strong>
+        <span className="muted">{request.email}</span>
+      </span>
     </span>
   );
 }

@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import { UserAvatar } from '../../../shared/UserAvatar';
 import type { FriendRelationship, UserSearchResult } from '../model/types';
 
 const RELATIONSHIP_LABELS: Record<FriendRelationship, string> = {
@@ -80,9 +81,16 @@ export function FriendSearch({ results, isSearching, error, onSearch, onAdd }: P
 
             return (
               <li key={result.userId} className="search-result">
-                <span className="search-result-info">
-                  <strong>{result.displayName}</strong>
-                  <span className="muted">{result.email}</span>
+                <span className="search-result-user">
+                  <UserAvatar
+                    className="friend-avatar"
+                    displayName={result.displayName}
+                    avatarUrl={result.avatarUrl}
+                  />
+                  <span className="search-result-info">
+                    <strong>{result.displayName}</strong>
+                    <span className="muted">{result.email}</span>
+                  </span>
                 </span>
 
                 {result.relationship === 'None' ? (

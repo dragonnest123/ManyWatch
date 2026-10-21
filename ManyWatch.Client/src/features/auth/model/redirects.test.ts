@@ -2,9 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { buildAuthPath, getAuthRedirect } from './redirects';
 
 describe('getAuthRedirect', () => {
-  it('allows room and friends redirects', () => {
+  it('allows room, friends and profile redirects', () => {
     expect(getAuthRedirect(new URLSearchParams('redirect=%2Frooms%2Fabc'))).toBe('/rooms/abc');
     expect(getAuthRedirect(new URLSearchParams('redirect=%2Ffriends'))).toBe('/friends');
+    expect(getAuthRedirect(new URLSearchParams('redirect=%2Fprofile'))).toBe('/profile');
   });
 
   it('rejects external and unrelated redirects', () => {
