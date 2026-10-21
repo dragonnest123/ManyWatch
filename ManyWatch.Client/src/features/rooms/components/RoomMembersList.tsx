@@ -22,26 +22,39 @@ export function RoomMembersList({ members, maxMembers, canModerate, onBan }: Pro
         <p>No members yet</p>
       ) : (
         <ul className="members">
-          {members.map((member) => (
-            <li key={member.userId}>
-              <span>{getViewerName(member.userId, member.isMe)}</span>
+          {members.map((member) => {
+            const viewerName = getViewerName(member.userId, member.isMe);
 
-              <span className="member-actions">
-                {member.isHost && <strong>Host</strong>}
-                {canModerate && !member.isMe && (
-                  <button
-                    className="danger compact"
-                    type="button"
-                    onClick={() => onBan(member.userId)}
-                  >
-                    Ban
-                  </button>
-                )}
-              </span>
-            </li>
-          ))}
+            return (
+              <li key={member.userId}>
+                <span className="member-identity">
+                  <span className="member-avatar" aria-hidden="true">
+                    {getInitial(viewerName)}
+                  </span>
+                  <span>{viewerName}</span>
+                </span>
+
+                <span className="member-actions">
+                  {member.isHost && <strong className="host-badge">Host</strong>}
+                  {canModerate && !member.isMe && (
+                    <button
+                      className="danger compact"
+                      type="button"
+                      onClick={() => onBan(member.userId)}
+                    >
+                      Ban
+                    </button>
+                  )}
+                </span>
+              </li>
+            );
+          })}
         </ul>
       )}
     </section>
   );
+}
+
+function getInitial(viewerName: string): string {
+  return viewerName.trim().charAt(0).toUpperCase() || '?';
 }

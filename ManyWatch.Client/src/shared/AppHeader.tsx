@@ -58,8 +58,14 @@ export function AppHeader() {
 
   return (
     <header className="app-header">
-      <Link className="brand" to="/">
-        ManyWatch
+      <Link className="brand" to="/" aria-label="ManyWatch home">
+        <span className="brand-mark" aria-hidden="true">
+          <span className="brand-mark-core" />
+        </span>
+        <span className="brand-text">
+          <span className="brand-name">ManyWatch</span>
+          <span className="brand-tagline">watch together</span>
+        </span>
       </Link>
 
       <div className="header-right">
@@ -74,12 +80,15 @@ export function AppHeader() {
         {user ? (
           <div className="user-menu" ref={menuRef}>
             <button
-              className="secondary current-user"
+              className="current-user"
               type="button"
               onClick={handleToggleMenu}
               aria-expanded={isMenuOpen}
             >
-              {user.displayName}
+              <span className="user-avatar" aria-hidden="true">
+                {getInitial(user.displayName)}
+              </span>
+              <span className="user-name">{user.displayName}</span>
             </button>
 
             {isMenuOpen && (
@@ -102,12 +111,18 @@ export function AppHeader() {
             )}
           </div>
         ) : (
-          <nav className="top-nav" aria-label="Account">
+          <nav className="account-nav" aria-label="Account">
             <NavLink to="/login">Log in</NavLink>
-            <NavLink to="/register">Sign up</NavLink>
+            <NavLink className="nav-cta" to="/register">
+              Sign up
+            </NavLink>
           </nav>
         )}
       </div>
     </header>
   );
+}
+
+function getInitial(displayName: string): string {
+  return displayName.trim().charAt(0).toUpperCase() || '?';
 }

@@ -9,11 +9,15 @@ export function CreateRoomPage() {
 
       <main className="page form-page">
         <Link className="back-link" to="/">
-          ← Back
+          Back
         </Link>
 
-        <section className="card">
-          <h1>Create room</h1>
+        <section className="card form-card">
+          <p className="eyebrow">Start a screening</p>
+          <h1>Create a room</h1>
+          <p className="card-lead">
+            Name your room, choose who can join, then share the link with your audience
+          </p>
           <CreateRoomForm />
         </section>
       </main>

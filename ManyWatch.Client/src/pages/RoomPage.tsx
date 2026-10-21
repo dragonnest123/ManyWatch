@@ -184,7 +184,7 @@ export function RoomPage() {
 
         <main className="page">
           <Link className="back-link" to="/">
-            ← Back
+            Back
           </Link>
           <p className="error">{error || 'Room not found'}</p>
         </main>
@@ -198,16 +198,26 @@ export function RoomPage() {
 
       <main className="page room-page">
         <Link className="back-link" to="/">
-          ← Back
+          Back
         </Link>
 
         {error && <p className="error">{error}</p>}
 
         <section className="room-layout">
           <div className="watch-column">
-            <section className="card room-summary">
+            <section className="room-summary">
               <div>
-                <p className="eyebrow">{room.isPrivate ? 'Private room' : 'Public room'}</p>
+                <div className="room-meta">
+                  <span className={`room-visibility ${room.isPrivate ? 'is-private' : 'is-public'}`}>
+                    {room.isPrivate ? 'Private screening' : 'Open screening'}
+                  </span>
+                  <span className="room-meta-item">
+                    {room.members.length}
+                    {room.maxMembers !== null ? ` / ${room.maxMembers}` : ''}{' '}
+                    {room.members.length === 1 ? 'viewer' : 'viewers'}
+                  </span>
+                </div>
+
                 {isCurrentUserHost ? (
                   <RoomNameEditor room={room} onUpdated={setRoom} />
                 ) : (
@@ -215,7 +225,7 @@ export function RoomPage() {
                 )}
               </div>
 
-              <div className="actions">
+              <div className="actions room-actions">
                 <button className="secondary" onClick={handleLeaveRoom} disabled={isLeaving}>
                   Leave room
                 </button>

@@ -79,17 +79,23 @@ export function RoomsListPage() {
       <AppHeader />
 
       <main className="page rooms-list-page">
-        <div className="rooms-toolbar">
-          <Link className="back-link" to="/">
-            ← Back
-          </Link>
+        <header className="page-heading">
+          <div>
+            <h1>Rooms</h1>
+            <p className="page-subtitle">Browse open rooms or create your own</p>
+          </div>
 
-          <RoomsFilterBar filter={filter} onApply={handleApplyFilter} />
-        </div>
+          <div className="heading-actions">
+            <RoomsFilterBar filter={filter} onApply={handleApplyFilter} />
+            <Link className="button" to="/rooms/create">
+              Create a room
+            </Link>
+          </div>
+        </header>
 
         {displayedError && <p className="error">{displayedError}</p>}
 
-        {!page && isLoading && <p>Loading...</p>}
+        {!page && isLoading && <p className="muted loading-copy">Loading...</p>}
 
         {page && (
           <RoomsList

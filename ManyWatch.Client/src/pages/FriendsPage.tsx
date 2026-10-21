@@ -61,13 +61,13 @@ export function FriendsPage() {
 
         <main className="page form-page">
           <Link className="back-link" to="/">
-            ← Back
+            Back
           </Link>
 
-          <section className="card">
+          <section className="card form-card">
             <p className="eyebrow">Social</p>
             <h1>Friends</h1>
-            <p className="muted">
+            <p className="card-lead">
               Friend lists, personal chats and room invitations are available after signing in
             </p>
 
@@ -175,7 +175,7 @@ export function FriendsPage() {
 
       <main className="page friends-page">
         <Link className="back-link" to="/rooms">
-          ← Rooms
+          Rooms
         </Link>
 
         <div className="friends-heading">

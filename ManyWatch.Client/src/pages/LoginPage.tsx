@@ -13,11 +13,13 @@ export function LoginPage() {
 
       <main className="page form-page">
         <Link className="back-link" to="/">
-          ← Back
+          Back
         </Link>
 
-        <section className="card">
+        <section className="card form-card">
+          <p className="eyebrow">Welcome back</p>
           <h1>Log in</h1>
+          <p className="card-lead">Sign in to keep friends, invitations and chats in one place</p>
           <LoginForm />
           <p>
             No account yet? <Link to={buildAuthPath('/register', redirect)}>Sign up</Link>

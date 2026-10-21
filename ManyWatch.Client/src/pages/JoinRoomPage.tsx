@@ -9,11 +9,13 @@ export function JoinRoomPage() {
 
       <main className="page form-page">
         <Link className="back-link" to="/">
-          ← Back
+          Back
         </Link>
 
-        <section className="card">
-          <h1>Join room</h1>
+        <section className="card form-card">
+          <p className="eyebrow">Have an invite?</p>
+          <h1>Join a room</h1>
+          <p className="card-lead">Paste the room ID from your invitation to take a seat</p>
           <JoinRoomForm />
         </section>
       </main>

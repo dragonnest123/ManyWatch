@@ -16,8 +16,13 @@ export function BannedMembersList({ bans, onUnban }: Props) {
         <ul className="members">
           {bans.map((ban) => (
             <li key={ban.userId}>
-              <span className="muted" title={ban.userId}>
-                Viewer {ban.userId.slice(0, 8)}
+              <span className="member-identity">
+                <span className="member-avatar is-muted" aria-hidden="true">
+                  ×
+                </span>
+                <span className="muted" title={ban.userId}>
+                  Viewer {ban.userId.slice(0, 8)}
+                </span>
               </span>
 
               <span className="member-actions">

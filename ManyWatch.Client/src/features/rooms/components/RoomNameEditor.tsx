@@ -49,12 +49,12 @@ export function RoomNameEditor({ room, onUpdated }: Props) {
 
   if (!isEditing) {
     return (
-      <h1 className="room-title">
-        <span>{room.name}</span>
+      <div className="room-title">
+        <h1>{room.name}</h1>
         <button type="button" className="secondary compact" onClick={startEditing}>
           Rename
         </button>
-      </h1>
+      </div>
     );
   }
 

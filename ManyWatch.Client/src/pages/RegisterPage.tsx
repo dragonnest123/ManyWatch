@@ -13,11 +13,15 @@ export function RegisterPage() {
 
       <main className="page form-page">
         <Link className="back-link" to="/">
-          ← Back
+          Back
         </Link>
 
-        <section className="card">
-          <h1>Sign up</h1>
+        <section className="card form-card">
+          <p className="eyebrow">Join the audience</p>
+          <h1>Create an account</h1>
+          <p className="card-lead">
+            Friends, personal chats and invitations. Watching together stays open to guests
+          </p>
           <RegisterForm />
           <p>
             Already have an account? <Link to={buildAuthPath('/login', redirect)}>Log in</Link>

@@ -8,7 +8,7 @@ export function HelpPage() {
 
       <main className="page help-page">
         <Link className="back-link" to="/">
-          ← Back
+          Back
         </Link>
 
         <section className="card">
