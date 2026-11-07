@@ -10,6 +10,7 @@ public enum FriendRelationship
 
 public sealed record FriendResponse(
     Guid UserId,
+    string Username,
     string DisplayName,
     DateTime FriendsSince,
     string? AvatarUrl,
@@ -18,6 +19,7 @@ public sealed record FriendResponse(
 public sealed record FriendRequestResponse(
     Guid Id,
     Guid UserId,
+    string Username,
     string DisplayName,
     DateTime CreatedAt,
     string? AvatarUrl);
@@ -32,6 +34,7 @@ public sealed record FriendRequestsResponse(
 
 public sealed record UserSearchResultResponse(
     Guid UserId,
+    string Username,
     string DisplayName,
     FriendRelationship Relationship,
     string? AvatarUrl);

@@ -85,6 +85,7 @@ function RequestUser({ request }: { request: FriendRequest }) {
       />
       <span className="search-result-info">
         <strong>{request.displayName}</strong>
+        <span className="muted">@{request.username}</span>
       </span>
     </span>
   );

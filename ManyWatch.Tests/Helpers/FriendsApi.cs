@@ -14,12 +14,14 @@ public static class FriendsApi
         await session.EnsureIdentityAsync();
 
         var email = $"{Guid.NewGuid():N}@example.com";
+        var username = $"user{Guid.NewGuid():N}"[..24];
         var auth = await session.SendJsonAsync<AuthDto>(
             HttpMethod.Post,
             "/auth/register",
             new
             {
                 email,
+                username,
                 password = "password123",
                 displayName = $"{displayName} {Guid.NewGuid():N}",
             });

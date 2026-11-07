@@ -373,6 +373,12 @@ namespace ManyWatch.Migrations
                         .HasColumnType("text")
                         .HasColumnName("password_hash");
 
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("username");
+
                     b.Property<long>("WatchedSeconds")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
@@ -385,6 +391,10 @@ namespace ManyWatch.Migrations
                     b.HasIndex("Email")
                         .IsUnique()
                         .HasDatabaseName("ix_users_email");
+
+                    b.HasIndex("Username")
+                        .IsUnique()
+                        .HasDatabaseName("ix_users_username");
 
                     b.ToTable("users", (string)null);
                 });

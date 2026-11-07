@@ -78,7 +78,7 @@ public class ValidatorsTests
     public void UpdateProfile_LongBio_Fails()
     {
         var result = new UpdateProfileValidator()
-            .Validate(new UpdateProfileRequest("Viewer", new string('a', 501)));
+            .Validate(new UpdateProfileRequest("viewer", "Viewer", new string('a', 501)));
 
         Assert.False(result.IsValid);
     }
@@ -87,7 +87,7 @@ public class ValidatorsTests
     public void UpdateProfile_ValidValues_Passes()
     {
         var result = new UpdateProfileValidator()
-            .Validate(new UpdateProfileRequest("Viewer", "About me"));
+            .Validate(new UpdateProfileRequest("viewer", "Viewer", "About me"));
 
         Assert.True(result.IsValid);
     }
@@ -124,7 +124,8 @@ public class ValidatorsTests
     [Fact]
     public void Register_InvalidEmail_Fails()
     {
-        var result = new RegisterValidator().Validate(new RegisterRequest("not-an-email", "password123", "Name"));
+        var result = new RegisterValidator()
+            .Validate(new RegisterRequest("not-an-email", "viewer", "password123", "Name"));
 
         Assert.False(result.IsValid);
     }
@@ -132,7 +133,30 @@ public class ValidatorsTests
     [Fact]
     public void Register_ShortPassword_Fails()
     {
-        var result = new RegisterValidator().Validate(new RegisterRequest("user@example.com", "short", "Name"));
+        var result = new RegisterValidator()
+            .Validate(new RegisterRequest("user@example.com", "viewer", "short", "Name"));
+
+        Assert.False(result.IsValid);
+    }
+
+    [Theory]
+    [InlineData("1viewer")]
+    [InlineData("viewer name")]
+    [InlineData("ab")]
+    [InlineData("_viewer")]
+    public void Register_InvalidUsername_Fails(string username)
+    {
+        var result = new RegisterValidator()
+            .Validate(new RegisterRequest("user@example.com", username, "password123", "Name"));
+
+        Assert.False(result.IsValid);
+    }
+
+    [Fact]
+    public void UpdateProfile_InvalidUsername_Fails()
+    {
+        var result = new UpdateProfileValidator()
+            .Validate(new UpdateProfileRequest("bad username", "Viewer", null));
 
         Assert.False(result.IsValid);
     }

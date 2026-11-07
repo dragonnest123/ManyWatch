@@ -20,14 +20,24 @@ public static class SearchUsers
         var userId = context.User.GetAccountUserId();
         var term = query?.Trim().ToLowerInvariant();
 
-        if (string.IsNullOrEmpty(term) || term.Length < MinQueryLength)
+        if (string.IsNullOrEmpty(term))
+            return Results.Ok(Array.Empty<UserSearchResultResponse>());
+
+        var usernameOnly = term.StartsWith('@');
+        var usernameTerm = usernameOnly ? term[1..].Trim() : term;
+
+        if (usernameTerm.Length < MinQueryLength)
             return Results.Ok(Array.Empty<UserSearchResultResponse>());
 
         var users = await db.Users
             .AsNoTracking()
             .Where(user => user.Id != userId
-                           && user.DisplayName.ToLower().Contains(term))
-            .OrderBy(user => user.DisplayName)
+                           && (usernameOnly
+                               ? user.Username.Contains(usernameTerm)
+                               : user.DisplayName.ToLower().Contains(term)
+                                 || user.Username.Contains(usernameTerm)))
+            .OrderByDescending(user => user.Username == usernameTerm)
+            .ThenBy(user => user.DisplayName)
             .Take(MaxResults)
             .ToListAsync(cancellationToken);
 
@@ -42,24 +52,12 @@ public static class SearchUsers
         var results = users
             .Select(user => new UserSearchResultResponse(
                 user.Id,
+                user.Username,
                 user.DisplayName,
-                GetRelationship(friendshipsByUserId.GetValueOrDefault(user.Id), userId),
+                FriendQueries.GetRelationship(friendshipsByUserId.GetValueOrDefault(user.Id), userId),
                 ProfileMapping.AvatarUrl(user)))
             .ToArray();
 
         return Results.Ok(results);
-    }
-
-    private static FriendRelationship GetRelationship(Friendship? friendship, Guid userId)
-    {
-        if (friendship is null)
-            return FriendRelationship.None;
-
-        if (friendship.Status == FriendshipStatus.Accepted)
-            return FriendRelationship.Friends;
-
-        return friendship.RequestedById == userId
-            ? FriendRelationship.OutgoingRequest
-            : FriendRelationship.IncomingRequest;
     }
 }

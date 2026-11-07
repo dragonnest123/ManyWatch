@@ -1,4 +1,5 @@
 using FluentValidation;
+using ManyWatch.Domain;
 
 namespace ManyWatch.Features.Auth;
 
@@ -13,6 +14,13 @@ public sealed class RegisterValidator : AbstractValidator<RegisterRequest>
             .WithMessage("Email must be a valid email address")
             .MaximumLength(256)
             .WithMessage("Email must be 256 characters or fewer");
+
+        RuleFor(request => request.Username)
+            .Cascade(CascadeMode.Stop)
+            .NotEmpty()
+            .WithMessage("Username is required")
+            .Must(UsernameRules.IsValid)
+            .WithMessage("Username must be 3–32 characters: lowercase letters, numbers and underscores, starting with a letter");
 
         RuleFor(request => request.Password)
             .NotEmpty()

@@ -1,6 +1,7 @@
 namespace ManyWatch.Features.Profile;
 
 public sealed record UpdateProfileRequest(
+    string Username,
     string DisplayName,
     string? Bio);
 

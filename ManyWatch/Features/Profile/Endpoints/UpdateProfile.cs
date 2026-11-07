@@ -1,3 +1,4 @@
+using ManyWatch.Domain;
 using ManyWatch.Infrastructure.Identity;
 using ManyWatch.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,16 @@ public static class UpdateProfile
         if (user is null)
             return Results.Unauthorized();
 
+        var username = UsernameRules.Normalize(request.Username);
+
+        var usernameTaken = await db.Users
+            .AnyAsync(
+                other => other.Id != userId && other.Username == username,
+                cancellationToken);
+        if (usernameTaken)
+            return Results.Conflict(new { error = "This username is already taken" });
+
+        user.UpdateUsername(username);
         user.UpdateProfile(request.DisplayName.Trim(), request.Bio);
 
         await db.SaveChangesAsync(cancellationToken);

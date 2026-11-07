@@ -1068,6 +1068,15 @@ button.compact,
   text-transform: uppercase;
 }
 
+.form .form-hint {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1.45;
+  text-transform: none;
+}
+
 .form label.checkbox {
   display: flex;
   align-items: center;
@@ -2495,6 +2504,11 @@ button.compact,
 
 .search-result-user {
   flex: 1;
+  color: inherit;
+}
+
+a.search-result-user:hover {
+  color: var(--cream);
 }
 
 .invite-friend > span:last-child {
@@ -2549,6 +2563,46 @@ button.compact,
 .profile-identity-copy p {
   margin-top: 5px;
   overflow-wrap: anywhere;
+}
+
+.profile-handle {
+  margin: 4px 0 0;
+  color: var(--amber-bright);
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.public-profile-page {
+  width: min(680px, calc(100% - 48px));
+}
+
+.public-profile-card {
+  display: grid;
+  justify-items: start;
+  gap: 16px;
+  padding: 34px;
+}
+
+.public-profile-card h1 {
+  margin: 0;
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  font-weight: 400;
+  letter-spacing: -0.04em;
+}
+
+.public-profile-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.public-profile-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
 }
 
 .profile-avatar {

@@ -16,14 +16,26 @@ public static class ProfileApi
     public static Task<HttpResponseMessage> UpdateAsync(
         TestSession session,
         AuthDto auth,
+        string username,
         string displayName,
         string? bio)
     {
         return session.SendAsync(
             HttpMethod.Put,
             "/profile",
-            new { displayName, bio },
+            new { username, displayName, bio },
             bearerToken: auth.AccessToken);
+    }
+
+    public static Task<PublicProfileDto> GetPublicAsync(
+        TestSession session,
+        string username,
+        string? bearerToken = null)
+    {
+        return session.SendJsonAsync<PublicProfileDto>(
+            HttpMethod.Get,
+            $"/users/{Uri.EscapeDataString(username)}",
+            bearerToken: bearerToken);
     }
 
     public static Task<HttpResponseMessage> UploadAvatarAsync(

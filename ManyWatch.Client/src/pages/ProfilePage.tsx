@@ -2,26 +2,27 @@ import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'r
 import { Link } from 'react-router-dom';
 import { useAuth } from '../features/auth/hooks/useAuth';
 import { buildAuthPath } from '../features/auth/model/redirects';
+import {
+  isValidUsername,
+  normalizeUsername,
+  USERNAME_MAX_LENGTH,
+  USERNAME_MIN_LENGTH,
+} from '../features/auth/model/username';
 import { deleteAvatar, getProfile, updateProfile, uploadAvatar } from '../features/profile/api/profileApi';
 import { AvatarCropDialog } from '../features/profile/components/AvatarCropDialog';
 import { loadAvatarSource, type AvatarSource } from '../features/profile/model/avatarImage';
-import { formatWatchedHours } from '../features/profile/model/format';
+import { formatProfileDate, formatWatchedHours } from '../features/profile/model/format';
 import type { UserProfile } from '../features/profile/model/types';
 import { AppHeader } from '../shared/AppHeader';
 import { UserAvatar } from '../shared/UserAvatar';
 
 const BIO_LIMIT = 500;
 
-const dateFormatter = new Intl.DateTimeFormat(undefined, {
-  year: 'numeric',
-  month: 'short',
-  day: 'numeric',
-});
-
 export function ProfilePage() {
   const { user, isLoading: isAuthLoading, updateUser } = useAuth();
 
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [username, setUsername] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [bio, setBio] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -60,9 +61,11 @@ export function ProfilePage() {
         }
 
         setProfile(loadedProfile);
+        setUsername(loadedProfile.username);
         setDisplayName(loadedProfile.displayName);
         setBio(loadedProfile.bio ?? '');
         updateUser({
+          username: loadedProfile.username,
           displayName: loadedProfile.displayName,
           avatarUrl: loadedProfile.avatarUrl,
         });
@@ -128,20 +131,33 @@ export function ProfilePage() {
 
   async function handleSave(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setIsSaving(true);
     setError('');
     setStatusMessage('');
 
+    const normalizedUsername = normalizeUsername(username);
+
+    if (!isValidUsername(normalizedUsername)) {
+      setError(
+        'Username must be 3–32 characters: lowercase letters, numbers and underscores, starting with a letter',
+      );
+      return;
+    }
+
+    setIsSaving(true);
+
     try {
       const updatedProfile = await updateProfile({
+        username: normalizedUsername,
         displayName: displayName.trim(),
         bio: bio.trim() || null,
       });
 
       setProfile(updatedProfile);
+      setUsername(updatedProfile.username);
       setDisplayName(updatedProfile.displayName);
       setBio(updatedProfile.bio ?? '');
       updateUser({
+        username: updatedProfile.username,
         displayName: updatedProfile.displayName,
         avatarUrl: updatedProfile.avatarUrl,
       });
@@ -287,6 +303,7 @@ export function ProfilePage() {
 
               <div className="profile-identity-copy">
                 <h2>{profile.displayName}</h2>
+                <p className="profile-handle">@{profile.username}</p>
                 <p className="muted">{profile.email}</p>
               </div>
 
@@ -313,7 +330,7 @@ export function ProfilePage() {
 
                 <article className="card profile-stat">
                   <span className="profile-stat-value profile-stat-date">
-                    {formatDate(profile.createdAt)}
+                    {formatProfileDate(profile.createdAt)}
                   </span>
                   <span className="profile-stat-label">Member since</span>
                 </article>
@@ -323,6 +340,23 @@ export function ProfilePage() {
                 <h2>About you</h2>
 
                 <form className="form" onSubmit={handleSave}>
+                  <label>
+                    Username
+                    <input
+                      required
+                      minLength={USERNAME_MIN_LENGTH}
+                      maxLength={USERNAME_MAX_LENGTH}
+                      value={username}
+                      onChange={(event) => setUsername(event.target.value)}
+                      onBlur={() => setUsername((current) => normalizeUsername(current))}
+                      placeholder="alice"
+                    />
+                    <span className="form-hint">
+                      People can find you by @{normalizeUsername(username) || 'username'}; changing
+                      it breaks old profile links
+                    </span>
+                  </label>
+
                   <label>
                     Display name
                     <input
@@ -382,8 +416,4 @@ export function ProfilePage() {
   );
 }
 
-function formatDate(value: string): string {
-  const date = new Date(value);
 
-  return Number.isNaN(date.getTime()) ? 'Unknown' : dateFormatter.format(date);
-}

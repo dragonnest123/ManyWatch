@@ -37,6 +37,7 @@ public sealed record ChatMessageDto(
 public sealed record AuthDto(
     Guid UserId,
     string Email,
+    string Username,
     string DisplayName,
     string AccessToken,
     string RefreshToken,
@@ -46,6 +47,7 @@ public sealed record AuthDto(
 public sealed record MeDto(
     Guid UserId,
     string Email,
+    string Username,
     string DisplayName,
     DateTime CreatedAt,
     string? AvatarUrl);
@@ -53,12 +55,24 @@ public sealed record MeDto(
 public sealed record ProfileDto(
     Guid UserId,
     string Email,
+    string Username,
     string DisplayName,
     string? Bio,
     string? AvatarUrl,
     DateTime CreatedAt,
     long WatchedSeconds,
     int FriendCount);
+
+public sealed record PublicProfileDto(
+    Guid UserId,
+    string Username,
+    string DisplayName,
+    string? Bio,
+    string? AvatarUrl,
+    DateTime CreatedAt,
+    int FriendCount,
+    string Relationship,
+    bool IsSelf);
 
 public sealed record AvatarDto(
     string AvatarUrl);
@@ -68,6 +82,7 @@ public sealed record WatchTimeDto(
 
 public sealed record FriendDto(
     Guid UserId,
+    string Username,
     string DisplayName,
     DateTime FriendsSince,
     string? AvatarUrl,
@@ -80,6 +95,7 @@ public sealed record FriendPresenceDto(
 public sealed record FriendRequestDto(
     Guid Id,
     Guid UserId,
+    string Username,
     string DisplayName,
     DateTime CreatedAt,
     string? AvatarUrl);
@@ -90,6 +106,7 @@ public sealed record FriendRequestsDto(
 
 public sealed record UserSearchResultDto(
     Guid UserId,
+    string Username,
     string DisplayName,
     string Relationship,
     string? AvatarUrl);

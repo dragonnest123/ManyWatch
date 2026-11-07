@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import { Link } from 'react-router-dom';
 import { UserAvatar } from '../../../shared/UserAvatar';
 import type { FriendRelationship, UserSearchResult } from '../model/types';
 
@@ -60,8 +61,8 @@ export function FriendSearch({ results, isSearching, error, onSearch, onAdd }: P
           type="search"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          placeholder="Name"
-          aria-label="Search people by name"
+          placeholder="Name or @username"
+          aria-label="Search people by name or username"
         />
         <button type="submit" disabled={isSearching || query.trim().length < 2}>
           {isSearching ? 'Searching...' : 'Search'}
@@ -81,7 +82,7 @@ export function FriendSearch({ results, isSearching, error, onSearch, onAdd }: P
 
             return (
               <li key={result.userId} className="search-result">
-                <span className="search-result-user">
+                <Link className="search-result-user" to={`/users/${result.username}`}>
                   <UserAvatar
                     className="friend-avatar"
                     displayName={result.displayName}
@@ -89,8 +90,9 @@ export function FriendSearch({ results, isSearching, error, onSearch, onAdd }: P
                   />
                   <span className="search-result-info">
                     <strong>{result.displayName}</strong>
+                    <span className="muted">@{result.username}</span>
                   </span>
-                </span>
+                </Link>
 
                 {result.relationship === 'None' ? (
                   <button

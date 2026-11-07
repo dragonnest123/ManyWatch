@@ -25,6 +25,7 @@ public class ProfileEndpointsTests : IClassFixture<ManyWatchAppFactory>
 
         Assert.Equal(auth.UserId, profile.UserId);
         Assert.Equal(auth.Email, profile.Email);
+        Assert.Equal(auth.Username, profile.Username);
         Assert.Null(profile.Bio);
         Assert.Null(profile.AvatarUrl);
         Assert.Equal(0, profile.WatchedSeconds);
@@ -40,6 +41,7 @@ public class ProfileEndpointsTests : IClassFixture<ManyWatchAppFactory>
         var response = await ProfileApi.UpdateAsync(
             session,
             auth,
+            auth.Username,
             "  Cinema Fan  ",
             "  Watching movies with friends  ");
 
@@ -57,10 +59,10 @@ public class ProfileEndpointsTests : IClassFixture<ManyWatchAppFactory>
     public async Task UpdateProfile_EmptyBio_ClearsIt()
     {
         var (auth, session) = await FriendsApi.RegisterAsync(_factory, "Profile User");
-        await ProfileApi.UpdateAsync(session, auth, "Profile User", "About me");
+        await ProfileApi.UpdateAsync(session, auth, auth.Username, "Profile User", "About me");
 
         var profile = await ProfileApi.ReadProfileAsync(
-            await ProfileApi.UpdateAsync(session, auth, "Profile User", "   "));
+            await ProfileApi.UpdateAsync(session, auth, auth.Username, "Profile User", "   "));
 
         Assert.Null(profile.Bio);
     }
@@ -165,6 +167,90 @@ public class ProfileEndpointsTests : IClassFixture<ManyWatchAppFactory>
 
         var imageAfterDelete = await session.GetAsync(avatar.AvatarUrl);
         Assert.Equal(HttpStatusCode.NotFound, imageAfterDelete.StatusCode);
+    }
+
+    [Fact]
+    public async Task UpdateProfile_ChangesUsername_AndRejectsDuplicate()
+    {
+        var (firstAuth, firstSession) = await FriendsApi.RegisterAsync(_factory, "First User");
+        var (secondAuth, _) = await FriendsApi.RegisterAsync(_factory, "Second User");
+        var newUsername = $"new{Guid.NewGuid():N}"[..24];
+
+        var response = await ProfileApi.UpdateAsync(
+            firstSession,
+            firstAuth,
+            newUsername,
+            "First User",
+            null);
+        var profile = await ProfileApi.ReadProfileAsync(response);
+        Assert.Equal(newUsername, profile.Username);
+
+        var duplicate = await ProfileApi.UpdateAsync(
+            firstSession,
+            firstAuth,
+            secondAuth.Username.ToUpperInvariant(),
+            "First User",
+            null);
+        Assert.Equal(HttpStatusCode.Conflict, duplicate.StatusCode);
+    }
+
+    [Fact]
+    public async Task PublicProfile_IsAnonymousAndDoesNotExposeEmail()
+    {
+        var (auth, _) = await FriendsApi.RegisterAsync(_factory, "Public User");
+        var guest = new TestSession(_factory);
+
+        var profile = await ProfileApi.GetPublicAsync(guest, auth.Username.ToUpperInvariant());
+
+        Assert.Equal(auth.UserId, profile.UserId);
+        Assert.Equal(auth.Username, profile.Username);
+        Assert.Equal("None", profile.Relationship);
+        Assert.False(profile.IsSelf);
+        Assert.Equal(0, profile.FriendCount);
+
+        var raw = await guest.GetAsync($"/users/{auth.Username}");
+        var body = await raw.Content.ReadAsStringAsync();
+        Assert.DoesNotContain("email", body, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task PublicProfile_ReturnsRelationshipForViewer()
+    {
+        var (alice, aliceSession) = await FriendsApi.RegisterAsync(_factory, "Alice");
+        var (bob, bobSession) = await FriendsApi.RegisterAsync(_factory, "Bob");
+
+        var before = await ProfileApi.GetPublicAsync(bobSession, alice.Username, bob.AccessToken);
+        Assert.Equal("None", before.Relationship);
+        Assert.False(before.IsSelf);
+
+        await FriendsApi.SendRequestAsync(aliceSession, alice, bob.UserId);
+
+        var incoming = await ProfileApi.GetPublicAsync(bobSession, alice.Username, bob.AccessToken);
+        Assert.Equal("IncomingRequest", incoming.Relationship);
+
+        var outgoing = await ProfileApi.GetPublicAsync(aliceSession, bob.Username, alice.AccessToken);
+        Assert.Equal("OutgoingRequest", outgoing.Relationship);
+
+        var requests = await FriendsApi.GetRequestsAsync(bobSession, bob);
+        await FriendsApi.AcceptRequestAsync(bobSession, bob, Assert.Single(requests.Incoming).Id);
+
+        var friends = await ProfileApi.GetPublicAsync(bobSession, alice.Username, bob.AccessToken);
+        Assert.Equal("Friends", friends.Relationship);
+
+        var self = await ProfileApi.GetPublicAsync(aliceSession, alice.Username, alice.AccessToken);
+        Assert.True(self.IsSelf);
+        Assert.Equal("None", self.Relationship);
+    }
+
+    [Fact]
+    public async Task PublicProfile_UnknownUsername_ReturnsNotFound()
+    {
+        var guest = new TestSession(_factory);
+        var username = $"missing{Guid.NewGuid():N}"[..20];
+
+        var response = await guest.GetAsync($"/users/{username}");
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
     [Fact]

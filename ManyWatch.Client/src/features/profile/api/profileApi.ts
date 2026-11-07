@@ -1,6 +1,7 @@
 import { apiRequest } from '../../../shared/httpClient';
 import type {
   AvatarResponse,
+  PublicProfile,
   UpdateProfileRequest,
   UserProfile,
   WatchTimeResponse,
@@ -8,6 +9,10 @@ import type {
 
 export function getProfile(): Promise<UserProfile> {
   return apiRequest<UserProfile>('/profile');
+}
+
+export function getPublicProfile(username: string): Promise<PublicProfile> {
+  return apiRequest<PublicProfile>(`/users/${encodeURIComponent(username)}`);
 }
 
 export function updateProfile(request: UpdateProfileRequest): Promise<UserProfile> {
