@@ -186,7 +186,13 @@ public class RoomEndpointsTests : IClassFixture<ManyWatchAppFactory>
         var auth = await guest.SendJsonAsync<AuthDto>(
             HttpMethod.Post,
             "/auth/register",
-            new { email, password = "password123", displayName = "Guest" });
+            new
+            {
+                email,
+                username = $"guest{Guid.NewGuid():N}"[..24],
+                password = "password123",
+                displayName = "Guest",
+            });
 
         var signedInAttempt = await guest.SendAsync(
             HttpMethod.Post,

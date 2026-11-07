@@ -100,8 +100,8 @@ export function AppHeader() {
                 {profileError && <p className="error">{profileError}</p>}
                 {profile && !isLoadingProfile && !profileError && (
                   <dl className="profile-details">
-                    <dt>Email</dt>
-                    <dd title={profile.email}>{profile.email}</dd>
+                    <dt>Username</dt>
+                    <dd>@{profile.username}</dd>
                     <dt>Member since</dt>
                     <dd>{new Date(profile.createdAt).toLocaleDateString()}</dd>
                   </dl>

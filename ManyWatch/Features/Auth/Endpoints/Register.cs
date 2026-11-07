@@ -16,13 +16,19 @@ public static class Register
         CancellationToken cancellationToken)
     {
         var email = request.Email.Trim().ToLowerInvariant();
+        var username = UsernameRules.Normalize(request.Username);
 
         var emailTaken = await db.Users
             .AnyAsync(user => user.Email == email, cancellationToken);
         if (emailTaken)
             return Results.Conflict(new { error = "This email is already registered" });
 
-        var user = new User(email, passwordHash: "", request.DisplayName.Trim());
+        var usernameTaken = await db.Users
+            .AnyAsync(user => user.Username == username, cancellationToken);
+        if (usernameTaken)
+            return Results.Conflict(new { error = "This username is already taken" });
+
+        var user = new User(email, username, passwordHash: "", request.DisplayName.Trim());
         user.PasswordHash = passwordHasher.HashPassword(user, request.Password);
 
         db.Users.Add(user);
@@ -39,6 +45,6 @@ public static class Register
 
         return Results.Created(
             "/auth/me",
-            new AuthResponse(user.Id, user.Email, user.DisplayName, accessToken, refreshToken, expiresAt, ProfileMapping.AvatarUrl(user)));
+            new AuthResponse(user.Id, user.Email, user.Username, user.DisplayName, accessToken, refreshToken, expiresAt, ProfileMapping.AvatarUrl(user)));
     }
 }

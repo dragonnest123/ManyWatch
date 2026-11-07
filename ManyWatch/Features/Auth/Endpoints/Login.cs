@@ -36,6 +36,6 @@ public static class Login
 
         await db.SaveChangesAsync(cancellationToken);
 
-        return Results.Ok(new AuthResponse(user.Id, user.Email, user.DisplayName, accessToken, refreshToken, expiresAt, ProfileMapping.AvatarUrl(user)));
+        return Results.Ok(new AuthResponse(user.Id, user.Email, user.Username, user.DisplayName, accessToken, refreshToken, expiresAt, ProfileMapping.AvatarUrl(user)));
     }
 }

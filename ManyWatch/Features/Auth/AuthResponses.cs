@@ -3,6 +3,7 @@ namespace ManyWatch.Features.Auth;
 public sealed record AuthResponse(
     Guid UserId,
     string Email,
+    string Username,
     string DisplayName,
     string AccessToken,
     string RefreshToken,
@@ -12,6 +13,7 @@ public sealed record AuthResponse(
 public sealed record MeResponse(
     Guid UserId,
     string Email,
+    string Username,
     string DisplayName,
     DateTime CreatedAt,
     string? AvatarUrl);

@@ -7,6 +7,7 @@ public class User
 
     public Guid Id { get; set; }
     public string Email { get; set; }
+    public string Username { get; set; }
     public string PasswordHash { get; set; }
     public string DisplayName { get; set; }
     public string? Bio { get; set; }
@@ -18,14 +19,20 @@ public class User
     {
     }
 
-    public User(string email, string passwordHash, string displayName)
+    public User(string email, string username, string passwordHash, string displayName)
     {
         Id = Guid.CreateVersion7();
         Email = email;
+        Username = UsernameRules.Normalize(username);
         PasswordHash = passwordHash;
         DisplayName = displayName;
         WatchedSeconds = 0;
         CreatedAt = DateTime.UtcNow;
+    }
+
+    public void UpdateUsername(string username)
+    {
+        Username = UsernameRules.Normalize(username);
     }
 
     public void UpdateProfile(string displayName, string? bio)

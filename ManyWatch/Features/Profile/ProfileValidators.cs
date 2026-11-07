@@ -7,6 +7,13 @@ public sealed class UpdateProfileValidator : AbstractValidator<UpdateProfileRequ
 {
     public UpdateProfileValidator()
     {
+        RuleFor(request => request.Username)
+            .Cascade(CascadeMode.Stop)
+            .NotEmpty()
+            .WithMessage("Username is required")
+            .Must(UsernameRules.IsValid)
+            .WithMessage("Username must be 3–32 characters: lowercase letters, numbers and underscores, starting with a letter");
+
         RuleFor(request => request.DisplayName)
             .NotEmpty()
             .WithMessage("Display name is required")

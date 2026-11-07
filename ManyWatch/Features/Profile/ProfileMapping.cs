@@ -18,6 +18,7 @@ public static class ProfileMapping
             return new ProfileResponse(
                 user.Id,
                 user.Email,
+                user.Username,
                 user.DisplayName,
                 user.Bio,
                 AvatarUrl(user),

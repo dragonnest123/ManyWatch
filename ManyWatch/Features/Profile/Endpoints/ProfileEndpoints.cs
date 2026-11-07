@@ -30,6 +30,10 @@ public static class ProfileEndpoints
                 .AddEndpointFilter<ValidationFilter<RecordWatchTimeRequest>>()
                 .WithTags("RecordWatchTime");
 
+            app.MapGet("/users/{username}", GetPublicProfile.Handle)
+                .AllowAnonymous()
+                .WithTags("GetPublicProfile");
+
             app.MapGet("/users/{userId:guid}/avatar", GetAvatar.Handle)
                 .AllowAnonymous()
                 .WithTags("GetAvatar");

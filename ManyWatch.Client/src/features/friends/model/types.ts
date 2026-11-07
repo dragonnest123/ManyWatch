@@ -1,5 +1,6 @@
 export type Friend = {
   userId: string;
+  username: string;
   displayName: string;
   friendsSince: string;
   avatarUrl: string | null;
@@ -9,6 +10,7 @@ export type Friend = {
 export type FriendRequest = {
   id: string;
   userId: string;
+  username: string;
   displayName: string;
   createdAt: string;
   avatarUrl: string | null;
@@ -23,6 +25,7 @@ export type FriendRelationship = 'None' | 'Friends' | 'OutgoingRequest' | 'Incom
 
 export type UserSearchResult = {
   userId: string;
+  username: string;
   displayName: string;
   relationship: FriendRelationship;
   avatarUrl: string | null;

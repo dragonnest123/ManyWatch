@@ -24,6 +24,7 @@ public static class Me
         return Results.Ok(new MeResponse(
             user.Id,
             user.Email,
+            user.Username,
             user.DisplayName,
             user.CreatedAt,
             ProfileMapping.AvatarUrl(user)));

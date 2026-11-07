@@ -1,12 +1,14 @@
 export type AuthUser = {
   id: string;
   email: string;
+  username: string;
   displayName: string;
   avatarUrl: string | null;
 };
 
 export type RegisterRequest = {
   email: string;
+  username: string;
   password: string;
   displayName: string;
 };
@@ -19,6 +21,7 @@ export type LoginRequest = {
 export type AuthResponse = {
   userId: string;
   email: string;
+  username: string;
   displayName: string;
   accessToken: string;
   refreshToken: string;
@@ -29,6 +32,7 @@ export type AuthResponse = {
 export type MeResponse = {
   userId: string;
   email: string;
+  username: string;
   displayName: string;
   createdAt: string;
   avatarUrl: string | null;

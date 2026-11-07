@@ -29,4 +29,17 @@ internal static class FriendQueries
 
         return friendship?.Status == FriendshipStatus.Accepted;
     }
+
+    public static FriendRelationship GetRelationship(Friendship? friendship, Guid? viewerId)
+    {
+        if (viewerId is null || friendship is null)
+            return FriendRelationship.None;
+
+        if (friendship.Status == FriendshipStatus.Accepted)
+            return FriendRelationship.Friends;
+
+        return friendship.RequestedById == viewerId
+            ? FriendRelationship.OutgoingRequest
+            : FriendRelationship.IncomingRequest;
+    }
 }

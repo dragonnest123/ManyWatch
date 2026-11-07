@@ -52,7 +52,7 @@ public class FriendsEndpointsTests : IClassFixture<ManyWatchAppFactory>
     }
 
     [Fact]
-    public async Task Search_MatchesDisplayNameOnly()
+    public async Task Search_MatchesDisplayNameOrUsername_ButNotEmail()
     {
         var (alice, aliceSession) = await FriendsApi.RegisterAsync(_factory, "Alice");
         var (bob, _) = await FriendsApi.RegisterAsync(_factory, "Bob");
@@ -61,7 +61,14 @@ public class FriendsEndpointsTests : IClassFixture<ManyWatchAppFactory>
         Assert.DoesNotContain(byEmail, result => result.UserId == bob.UserId);
 
         var byName = await FriendsApi.SearchAsync(aliceSession, alice, bob.DisplayName);
-        Assert.Contains(byName, result => result.UserId == bob.UserId);
+        var foundByName = Assert.Single(byName, result => result.UserId == bob.UserId);
+        Assert.Equal(bob.Username, foundByName.Username);
+
+        var byUsername = await FriendsApi.SearchAsync(aliceSession, alice, bob.Username);
+        Assert.Contains(byUsername, result => result.UserId == bob.UserId);
+
+        var byMention = await FriendsApi.SearchAsync(aliceSession, alice, $"@{bob.Username}");
+        Assert.Contains(byMention, result => result.UserId == bob.UserId);
     }
 
     [Fact]

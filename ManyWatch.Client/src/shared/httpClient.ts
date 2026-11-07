@@ -9,6 +9,7 @@ const REFRESH_TOKEN_STORAGE_KEY = 'manywatch.refreshToken';
 export type SessionUser = {
   id: string;
   email: string;
+  username: string;
   displayName: string;
   avatarUrl: string | null;
 };
@@ -69,6 +70,7 @@ type RequestOptions = {
 type RefreshResponse = {
   userId: string;
   email: string;
+  username: string;
   displayName: string;
   accessToken: string;
   refreshToken: string;
@@ -171,6 +173,7 @@ async function performRefresh(token: string): Promise<SessionUser | null> {
     return {
       id: data.userId,
       email: data.email,
+      username: data.username,
       displayName: data.displayName,
       avatarUrl: data.avatarUrl ?? null,
     };

@@ -111,6 +111,7 @@ export function FriendChatPanel({ friend, viewerId, onRemoveFriend }: Props) {
                 <span className="friend-online-dot" role="img" aria-label="Online" />
               )}
             </h2>
+            <p className="muted">@{friend.username}</p>
           </div>
         </div>
 

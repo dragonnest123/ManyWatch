@@ -34,6 +34,6 @@ public static class Refresh
 
         await db.SaveChangesAsync(cancellationToken);
 
-        return Results.Ok(new AuthResponse(user.Id, user.Email, user.DisplayName, accessToken, newRefreshToken, expiresAt, ProfileMapping.AvatarUrl(user)));
+        return Results.Ok(new AuthResponse(user.Id, user.Email, user.Username, user.DisplayName, accessToken, newRefreshToken, expiresAt, ProfileMapping.AvatarUrl(user)));
     }
 }

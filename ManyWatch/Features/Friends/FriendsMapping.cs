@@ -11,6 +11,7 @@ public static class FriendsMapping
         {
             return new FriendResponse(
                 friend.Id,
+                friend.Username,
                 friend.DisplayName,
                 friendship.RespondedAt ?? friendship.CreatedAt,
                 ProfileMapping.AvatarUrl(friend),
@@ -22,6 +23,7 @@ public static class FriendsMapping
             return new FriendRequestResponse(
                 friendship.Id,
                 otherUser.Id,
+                otherUser.Username,
                 otherUser.DisplayName,
                 friendship.CreatedAt,
                 ProfileMapping.AvatarUrl(otherUser));

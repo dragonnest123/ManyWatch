@@ -38,6 +38,7 @@ export function FriendsList({ friends, selectedFriendId, onSelect }: Props) {
                       <span className="friend-online-dot" role="img" aria-label="Online" />
                     )}
                   </span>
+                  <span className="muted">@{friend.username}</span>
                 </span>
               </button>
             </li>

@@ -20,6 +20,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser({
       id: response.userId,
       email: response.email,
+      username: response.username,
       displayName: response.displayName,
       avatarUrl: response.avatarUrl ?? null,
     });
@@ -56,8 +57,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     applySession(await authApi.login({ email, password }));
   }
 
-  async function register(email: string, password: string, displayName: string) {
-    applySession(await authApi.register({ email, password, displayName }));
+  async function register(
+    email: string,
+    password: string,
+    displayName: string,
+    username: string,
+  ) {
+    applySession(await authApi.register({ email, password, displayName, username }));
   }
 
   async function logout() {
