@@ -1,8 +1,15 @@
+import type { AvatarCropRect } from './avatarCrop';
+
 const SUPPORTED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
 const MAX_SOURCE_BYTES = 8 * 1024 * 1024;
 const AVATAR_SIZE = 256;
 
-export async function createAvatarDataUrl(file: File): Promise<string> {
+export type AvatarSource = {
+  image: HTMLImageElement;
+  url: string;
+};
+
+export async function loadAvatarSource(file: File): Promise<AvatarSource> {
   if (!SUPPORTED_TYPES.has(file.type)) {
     throw new Error('Choose a JPG, PNG, WebP or GIF image');
   }
@@ -11,17 +18,27 @@ export async function createAvatarDataUrl(file: File): Promise<string> {
     throw new Error('Image must be 8 MB or smaller');
   }
 
-  const image = await loadImage(file);
+  const url = URL.createObjectURL(file);
+
+  try {
+    const image = await loadImage(url);
+
+    if (image.width === 0 || image.height === 0) {
+      throw new Error('Could not process the image');
+    }
+
+    return { image, url };
+  } catch (error) {
+    URL.revokeObjectURL(url);
+    throw error;
+  }
+}
+
+export function createAvatarDataUrl(image: HTMLImageElement, crop: AvatarCropRect): string {
   const canvas = document.createElement('canvas');
   const context = canvas.getContext('2d');
 
   if (!context) {
-    throw new Error('Could not process the image');
-  }
-
-  const side = Math.min(image.width, image.height);
-
-  if (side === 0) {
     throw new Error('Could not process the image');
   }
 
@@ -30,10 +47,10 @@ export async function createAvatarDataUrl(file: File): Promise<string> {
 
   context.drawImage(
     image,
-    (image.width - side) / 2,
-    (image.height - side) / 2,
-    side,
-    side,
+    crop.x,
+    crop.y,
+    crop.size,
+    crop.size,
     0,
     0,
     AVATAR_SIZE,
@@ -43,21 +60,12 @@ export async function createAvatarDataUrl(file: File): Promise<string> {
   return canvas.toDataURL('image/webp', 0.85);
 }
 
-function loadImage(file: File): Promise<HTMLImageElement> {
+function loadImage(url: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
-    const url = URL.createObjectURL(file);
     const image = new Image();
 
-    image.onload = () => {
-      URL.revokeObjectURL(url);
-      resolve(image);
-    };
-
-    image.onerror = () => {
-      URL.revokeObjectURL(url);
-      reject(new Error('Could not read the image'));
-    };
-
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error('Could not read the image'));
     image.src = url;
   });
 }

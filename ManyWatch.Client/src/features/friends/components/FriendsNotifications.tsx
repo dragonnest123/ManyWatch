@@ -117,6 +117,10 @@ export function FriendsNotifications() {
       notifyFriendsChanged();
     });
 
+    connection.on('FriendPresenceChanged', () => {
+      notifyFriendsChanged();
+    });
+
     connection.onclose(() => {
       scheduleRetry();
     });

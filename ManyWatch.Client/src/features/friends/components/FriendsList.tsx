@@ -15,7 +15,7 @@ export function FriendsList({ friends, selectedFriendId, onSelect }: Props) {
       </h2>
 
       {friends.length === 0 ? (
-        <p className="muted">No friends yet. Find people by name or email</p>
+        <p className="muted">No friends yet. Find people by name</p>
       ) : (
         <ul className="friends-list">
           {friends.map((friend) => (
@@ -32,8 +32,12 @@ export function FriendsList({ friends, selectedFriendId, onSelect }: Props) {
                   avatarUrl={friend.avatarUrl}
                 />
                 <span className="friend-info">
-                  <strong>{friend.displayName}</strong>
-                  <span className="muted">{friend.email}</span>
+                  <span className="friend-name">
+                    <strong>{friend.displayName}</strong>
+                    {friend.isOnline && (
+                      <span className="friend-online-dot" role="img" aria-label="Online" />
+                    )}
+                  </span>
                 </span>
               </button>
             </li>

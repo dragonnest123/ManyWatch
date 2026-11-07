@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../features/auth/hooks/useAuth';
 import { buildAuthPath } from '../features/auth/model/redirects';
 import { deleteAvatar, getProfile, updateProfile, uploadAvatar } from '../features/profile/api/profileApi';
-import { createAvatarDataUrl } from '../features/profile/model/avatarImage';
+import { AvatarCropDialog } from '../features/profile/components/AvatarCropDialog';
+import { loadAvatarSource, type AvatarSource } from '../features/profile/model/avatarImage';
 import { formatWatchedHours } from '../features/profile/model/format';
 import type { UserProfile } from '../features/profile/model/types';
 import { AppHeader } from '../shared/AppHeader';
@@ -28,9 +29,19 @@ export function ProfilePage() {
   const [isAvatarBusy, setIsAvatarBusy] = useState(false);
   const [error, setError] = useState('');
   const [statusMessage, setStatusMessage] = useState('');
+  const [avatarSource, setAvatarSource] = useState<AvatarSource | null>(null);
+  const [avatarCropError, setAvatarCropError] = useState('');
 
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const userId = user?.id ?? null;
+
+  useEffect(() => {
+    if (!avatarSource) {
+      return;
+    }
+
+    return () => URL.revokeObjectURL(avatarSource.url);
+  }, [avatarSource]);
 
   useEffect(() => {
     if (!userId) {
@@ -150,19 +161,41 @@ export function ProfilePage() {
       return;
     }
 
+    setError('');
+    setStatusMessage('');
+    setAvatarCropError('');
+
+    try {
+      setAvatarSource(await loadAvatarSource(file));
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Avatar could not be prepared');
+    }
+  }
+
+  function handleAvatarCropCancel() {
+    if (isAvatarBusy) {
+      return;
+    }
+
+    setAvatarSource(null);
+    setAvatarCropError('');
+  }
+
+  async function handleAvatarCropConfirm(dataUrl: string) {
     setIsAvatarBusy(true);
+    setAvatarCropError('');
     setError('');
     setStatusMessage('');
 
     try {
-      const dataUrl = await createAvatarDataUrl(file);
       const response = await uploadAvatar(dataUrl);
 
       setProfile((current) => (current ? { ...current, avatarUrl: response.avatarUrl } : current));
       updateUser({ avatarUrl: response.avatarUrl });
+      setAvatarSource(null);
       setStatusMessage('Avatar updated');
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Avatar could not be updated');
+      setAvatarCropError(error instanceof Error ? error.message : 'Avatar could not be updated');
     } finally {
       setIsAvatarBusy(false);
     }
@@ -200,7 +233,6 @@ export function ProfilePage() {
             <p className="eyebrow">Account</p>
             <h1>Your profile</h1>
           </div>
-          <p className="muted">Personal details, watch time and friends in one place</p>
         </div>
 
         {error && <p className="error">{error}</p>}
@@ -336,6 +368,16 @@ export function ProfilePage() {
           </section>
         )}
       </main>
+
+      {avatarSource && (
+        <AvatarCropDialog
+          source={avatarSource}
+          isSubmitting={isAvatarBusy}
+          error={avatarCropError}
+          onCancel={handleAvatarCropCancel}
+          onConfirm={(dataUrl) => void handleAvatarCropConfirm(dataUrl)}
+        />
+      )}
     </>
   );
 }

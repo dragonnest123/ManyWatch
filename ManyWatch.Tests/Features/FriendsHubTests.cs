@@ -118,6 +118,43 @@ public class FriendsHubTests : IClassFixture<ManyWatchAppFactory>
     }
 
     [Fact]
+    public async Task FriendPresence_IsBroadcastAndReflectedInFriendsList()
+    {
+        var (alice, aliceSession) = await FriendsApi.RegisterAsync(_factory, "Alice");
+        var (bob, bobSession) = await FriendsApi.RegisterAsync(_factory, "Bob");
+        await FriendsApi.MakeFriendsAsync(aliceSession, alice, bobSession, bob);
+
+        await using var aliceConnection = RoomHubClientFactory.Create(
+            _factory, aliceSession, RoomHubClientFactory.FriendsHubPath, alice.AccessToken);
+        await aliceConnection.StartAsync();
+
+        var online = WaitForPresence(aliceConnection);
+
+        await using var bobConnection = RoomHubClientFactory.Create(
+            _factory, bobSession, RoomHubClientFactory.FriendsHubPath, bob.AccessToken);
+        await bobConnection.StartAsync();
+
+        var onlineEvent = await online.Task.WaitAsync(ReceiveTimeout);
+        Assert.Equal(bob.UserId, onlineEvent.UserId);
+        Assert.True(onlineEvent.IsOnline);
+
+        var aliceFriends = await FriendsApi.GetFriendsAsync(aliceSession, alice);
+        Assert.True(Assert.Single(aliceFriends).IsOnline);
+
+        var offline = WaitForPresence(aliceConnection);
+        await bobConnection.StopAsync();
+
+        var offlineEvent = await offline.Task.WaitAsync(ReceiveTimeout);
+        Assert.Equal(bob.UserId, offlineEvent.UserId);
+        Assert.False(offlineEvent.IsOnline);
+
+        aliceFriends = await FriendsApi.GetFriendsAsync(aliceSession, alice);
+        Assert.False(Assert.Single(aliceFriends).IsOnline);
+
+        await aliceConnection.StopAsync();
+    }
+
+    [Fact]
     public async Task Hub_RejectsConnectionWithoutAccessToken()
     {
         var (_, aliceSession) = await FriendsApi.RegisterAsync(_factory, "Alice");
@@ -136,6 +173,18 @@ public class FriendsHubTests : IClassFixture<ManyWatchAppFactory>
         connection.On<DirectMessageDto>(
             "DirectMessageReceived",
             message => completion.TrySetResult(message));
+
+        return completion;
+    }
+
+    private static TaskCompletionSource<FriendPresenceDto> WaitForPresence(HubConnection connection)
+    {
+        var completion = new TaskCompletionSource<FriendPresenceDto>(
+            TaskCreationOptions.RunContinuationsAsynchronously);
+
+        connection.On<FriendPresenceDto>(
+            "FriendPresenceChanged",
+            presence => completion.TrySetResult(presence));
 
         return completion;
     }

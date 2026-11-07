@@ -11,17 +11,20 @@ public enum FriendRelationship
 public sealed record FriendResponse(
     Guid UserId,
     string DisplayName,
-    string Email,
     DateTime FriendsSince,
-    string? AvatarUrl);
+    string? AvatarUrl,
+    bool IsOnline);
 
 public sealed record FriendRequestResponse(
     Guid Id,
     Guid UserId,
     string DisplayName,
-    string Email,
     DateTime CreatedAt,
     string? AvatarUrl);
+
+public sealed record FriendPresenceChangedResponse(
+    Guid UserId,
+    bool IsOnline);
 
 public sealed record FriendRequestsResponse(
     IReadOnlyCollection<FriendRequestResponse> Incoming,
@@ -30,7 +33,6 @@ public sealed record FriendRequestsResponse(
 public sealed record UserSearchResultResponse(
     Guid UserId,
     string DisplayName,
-    string Email,
     FriendRelationship Relationship,
     string? AvatarUrl);
 

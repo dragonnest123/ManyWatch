@@ -7,14 +7,14 @@ public static class FriendsMapping
 {
     extension(Friendship friendship)
     {
-        public FriendResponse ToFriendResponse(User friend)
+        public FriendResponse ToFriendResponse(User friend, bool isOnline)
         {
             return new FriendResponse(
                 friend.Id,
                 friend.DisplayName,
-                friend.Email,
                 friendship.RespondedAt ?? friendship.CreatedAt,
-                ProfileMapping.AvatarUrl(friend));
+                ProfileMapping.AvatarUrl(friend),
+                isOnline);
         }
 
         public FriendRequestResponse ToFriendRequestResponse(User otherUser)
@@ -23,7 +23,6 @@ public static class FriendsMapping
                 friendship.Id,
                 otherUser.Id,
                 otherUser.DisplayName,
-                otherUser.Email,
                 friendship.CreatedAt,
                 ProfileMapping.AvatarUrl(otherUser));
         }

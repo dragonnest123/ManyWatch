@@ -60,8 +60,8 @@ export function FriendSearch({ results, isSearching, error, onSearch, onAdd }: P
           type="search"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          placeholder="Name or email"
-          aria-label="Search people by name or email"
+          placeholder="Name"
+          aria-label="Search people by name"
         />
         <button type="submit" disabled={isSearching || query.trim().length < 2}>
           {isSearching ? 'Searching...' : 'Search'}
@@ -89,7 +89,6 @@ export function FriendSearch({ results, isSearching, error, onSearch, onAdd }: P
                   />
                   <span className="search-result-info">
                     <strong>{result.displayName}</strong>
-                    <span className="muted">{result.email}</span>
                   </span>
                 </span>
 

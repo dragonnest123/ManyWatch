@@ -10,6 +10,7 @@ public static class GetFriends
     public static async Task<IResult> Handle(
         HttpContext context,
         AppDbContext db,
+        FriendsPresenceTracker presence,
         CancellationToken cancellationToken)
     {
         var userId = context.User.GetAccountUserId();
@@ -31,7 +32,12 @@ public static class GetFriends
 
         var friends = friendships
             .Where(friendship => users.ContainsKey(friendship.OtherUserId(userId)))
-            .Select(friendship => friendship.ToFriendResponse(users[friendship.OtherUserId(userId)]))
+            .Select(friendship =>
+            {
+                var friendId = friendship.OtherUserId(userId);
+
+                return friendship.ToFriendResponse(users[friendId], presence.IsOnline(friendId));
+            })
             .OrderBy(friend => friend.DisplayName, StringComparer.OrdinalIgnoreCase)
             .ToArray();
 

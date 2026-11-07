@@ -13,7 +13,7 @@ import { BannedMembersList } from '../features/rooms/components/BannedMembersLis
 import { RoomMembersList } from '../features/rooms/components/RoomMembersList';
 import { InviteFriendsCard } from '../features/friends/components/InviteFriendsCard';
 import { RoomNameEditor } from '../features/rooms/components/RoomNameEditor';
-import { RoomSettingsForm } from '../features/rooms/components/RoomSettingsForm';
+import { RoomSettingsDialog } from '../features/rooms/components/RoomSettingsDialog';
 import { useCurrentRoom } from '../features/rooms/hooks/useCurrentRoom';
 import type { Room } from '../features/rooms/model/types';
 import { useAuth } from '../features/auth/hooks/useAuth';
@@ -33,6 +33,7 @@ export function RoomPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isLeaving, setIsLeaving] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const currentMember = room?.members.find((member) => member.isMe);
   const isCurrentUserHost = currentMember?.isHost ?? false;
@@ -224,6 +225,31 @@ export function RoomPage() {
           </div>
 
           <div className="actions room-actions">
+            {isCurrentUserHost && (
+              <button
+                type="button"
+                className="secondary icon-button"
+                aria-label="Room settings"
+                title="Room settings"
+                onClick={() => setIsSettingsOpen(true)}
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.7"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="3" />
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                </svg>
+              </button>
+            )}
+
             <button className="secondary" onClick={handleLeaveRoom} disabled={isLeaving}>
               Leave room
             </button>
@@ -275,8 +301,6 @@ export function RoomPage() {
               enabled={isMember}
             />
 
-            {isCurrentUserHost && <RoomSettingsForm room={room} onUpdated={setRoom} />}
-
             <InviteFriendsCard roomId={room.id} enabled={isMember} />
 
             <RoomMembersList
@@ -291,6 +315,14 @@ export function RoomPage() {
             )}
           </aside>
         </section>
+
+        {isCurrentUserHost && isSettingsOpen && (
+          <RoomSettingsDialog
+            room={room}
+            onUpdated={setRoom}
+            onClose={() => setIsSettingsOpen(false)}
+          />
+        )}
       </main>
     </>
   );

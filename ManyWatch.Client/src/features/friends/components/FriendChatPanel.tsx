@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { MAX_CHAT_MESSAGE_LENGTH } from '../../chat/model/messages';
-import type { RoomConnectionStatus } from '../../playback/model/types';
 import { UserAvatar } from '../../../shared/UserAvatar';
 import { useFriendChat } from '../hooks/useFriendChat';
 import type { Friend } from '../model/types';
@@ -9,13 +8,6 @@ type Props = {
   friend: Friend;
   viewerId: string;
   onRemoveFriend: () => void;
-};
-
-const STATUS_LABELS: Record<RoomConnectionStatus, string> = {
-  connecting: 'Connecting...',
-  connected: 'Live',
-  reconnecting: 'Reconnecting...',
-  disconnected: 'Offline',
 };
 
 const timeFormatter = new Intl.DateTimeFormat(undefined, {
@@ -30,9 +22,11 @@ export function FriendChatPanel({ friend, viewerId, onRemoveFriend }: Props) {
   });
   const [draft, setDraft] = useState('');
   const [isSending, setIsSending] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const messagesRef = useRef<HTMLDivElement>(null);
   const stickToBottomRef = useRef(true);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const list = messagesRef.current;
@@ -42,6 +36,32 @@ export function FriendChatPanel({ friend, viewerId, onRemoveFriend }: Props) {
 
     list.scrollTop = list.scrollHeight;
   }, [messages]);
+
+  useEffect(() => {
+    if (!isMenuOpen) {
+      return;
+    }
+
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setIsMenuOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isMenuOpen]);
 
   function handleScroll() {
     const list = messagesRef.current;
@@ -85,16 +105,53 @@ export function FriendChatPanel({ friend, viewerId, onRemoveFriend }: Props) {
             avatarUrl={friend.avatarUrl}
           />
           <div>
-            <h2>{friend.displayName}</h2>
-            <p className="muted">{friend.email}</p>
+            <h2 className="friend-chat-name">
+              {friend.displayName}
+              {friend.isOnline && (
+                <span className="friend-online-dot" role="img" aria-label="Online" />
+              )}
+            </h2>
           </div>
         </div>
 
         <div className="friend-chat-actions">
-          <span className={`connection-chip ${status}`}>{STATUS_LABELS[status]}</span>
-          <button type="button" className="danger compact" onClick={onRemoveFriend}>
-            Remove friend
-          </button>
+          <div className="friend-menu" ref={menuRef}>
+            <button
+              type="button"
+              className="secondary icon-button"
+              aria-label="Friend actions"
+              aria-haspopup="menu"
+              aria-expanded={isMenuOpen}
+              onClick={() => setIsMenuOpen((open) => !open)}
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="5" r="1.7" />
+                <circle cx="12" cy="12" r="1.7" />
+                <circle cx="12" cy="19" r="1.7" />
+              </svg>
+            </button>
+
+            {isMenuOpen && (
+              <div className="friend-menu-popover" role="menu">
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    onRemoveFriend();
+                  }}
+                >
+                  Delete friend
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

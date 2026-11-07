@@ -69,15 +69,18 @@ public sealed record WatchTimeDto(
 public sealed record FriendDto(
     Guid UserId,
     string DisplayName,
-    string Email,
     DateTime FriendsSince,
-    string? AvatarUrl);
+    string? AvatarUrl,
+    bool IsOnline);
+
+public sealed record FriendPresenceDto(
+    Guid UserId,
+    bool IsOnline);
 
 public sealed record FriendRequestDto(
     Guid Id,
     Guid UserId,
     string DisplayName,
-    string Email,
     DateTime CreatedAt,
     string? AvatarUrl);
 
@@ -88,7 +91,6 @@ public sealed record FriendRequestsDto(
 public sealed record UserSearchResultDto(
     Guid UserId,
     string DisplayName,
-    string Email,
     string Relationship,
     string? AvatarUrl);
 

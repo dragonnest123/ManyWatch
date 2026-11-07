@@ -107,17 +107,19 @@ export function AppHeader() {
                   </dl>
                 )}
 
-                <Link
-                  className="profile-link"
-                  to="/profile"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  View profile
-                </Link>
+                <div className="user-popover-actions">
+                  <Link
+                    className="button secondary"
+                    to="/profile"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    View profile
+                  </Link>
 
-                <button className="danger" type="button" onClick={handleLogout}>
-                  Log out
-                </button>
+                  <button className="danger" type="button" onClick={handleLogout}>
+                    Log out
+                  </button>
+                </div>
               </div>
             )}
           </div>

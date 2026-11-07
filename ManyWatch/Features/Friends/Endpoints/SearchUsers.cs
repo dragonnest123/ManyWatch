@@ -26,8 +26,7 @@ public static class SearchUsers
         var users = await db.Users
             .AsNoTracking()
             .Where(user => user.Id != userId
-                           && (user.DisplayName.ToLower().Contains(term)
-                               || user.Email.ToLower().Contains(term)))
+                           && user.DisplayName.ToLower().Contains(term))
             .OrderBy(user => user.DisplayName)
             .Take(MaxResults)
             .ToListAsync(cancellationToken);
@@ -44,7 +43,6 @@ public static class SearchUsers
             .Select(user => new UserSearchResultResponse(
                 user.Id,
                 user.DisplayName,
-                user.Email,
                 GetRelationship(friendshipsByUserId.GetValueOrDefault(user.Id), userId),
                 ProfileMapping.AvatarUrl(user)))
             .ToArray();

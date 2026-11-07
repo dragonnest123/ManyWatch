@@ -42,12 +42,26 @@ public class FriendsEndpointsTests : IClassFixture<ManyWatchAppFactory>
         var aliceFriends = await FriendsApi.GetFriendsAsync(aliceSession, alice);
         var bobFriends = await FriendsApi.GetFriendsAsync(bobSession, bob);
         Assert.Equal(bob.UserId, Assert.Single(aliceFriends).UserId);
+        Assert.False(Assert.Single(aliceFriends).IsOnline);
         Assert.Equal(alice.UserId, Assert.Single(bobFriends).UserId);
 
         search = await FriendsApi.SearchAsync(aliceSession, alice, bob.DisplayName);
         Assert.Equal(
             "Friends",
             Assert.Single(search, result => result.UserId == bob.UserId).Relationship);
+    }
+
+    [Fact]
+    public async Task Search_MatchesDisplayNameOnly()
+    {
+        var (alice, aliceSession) = await FriendsApi.RegisterAsync(_factory, "Alice");
+        var (bob, _) = await FriendsApi.RegisterAsync(_factory, "Bob");
+
+        var byEmail = await FriendsApi.SearchAsync(aliceSession, alice, bob.Email);
+        Assert.DoesNotContain(byEmail, result => result.UserId == bob.UserId);
+
+        var byName = await FriendsApi.SearchAsync(aliceSession, alice, bob.DisplayName);
+        Assert.Contains(byName, result => result.UserId == bob.UserId);
     }
 
     [Fact]

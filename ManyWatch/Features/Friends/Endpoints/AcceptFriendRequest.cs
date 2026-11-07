@@ -13,6 +13,7 @@ public static class AcceptFriendRequest
         HttpContext context,
         AppDbContext db,
         IHubContext<FriendsHub> hub,
+        FriendsPresenceTracker presence,
         CancellationToken cancellationToken)
     {
         var userId = context.User.GetAccountUserId();
@@ -44,7 +45,7 @@ public static class AcceptFriendRequest
                 hub,
                 requester.Id,
                 "FriendRequestAccepted",
-                friendship.ToFriendResponse(currentUser),
+                friendship.ToFriendResponse(currentUser, presence.IsOnline(currentUser.Id)),
                 cancellationToken);
         }
 

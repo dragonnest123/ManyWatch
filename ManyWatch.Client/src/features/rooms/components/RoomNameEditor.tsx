@@ -69,11 +69,11 @@ export function RoomNameEditor({ room, onUpdated }: Props) {
         onChange={(event) => setName(event.target.value)}
       />
 
-      <button type="submit" className="compact" disabled={!canSave}>
+      <button type="submit" disabled={!canSave}>
         {isSaving ? 'Saving…' : 'Save'}
       </button>
 
-      <button type="button" className="secondary compact" onClick={cancelEditing} disabled={isSaving}>
+      <button type="button" className="secondary" onClick={cancelEditing} disabled={isSaving}>
         Cancel
       </button>
 

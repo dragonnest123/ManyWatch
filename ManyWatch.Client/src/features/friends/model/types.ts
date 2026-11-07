@@ -1,16 +1,15 @@
 export type Friend = {
   userId: string;
   displayName: string;
-  email: string;
   friendsSince: string;
   avatarUrl: string | null;
+  isOnline: boolean;
 };
 
 export type FriendRequest = {
   id: string;
   userId: string;
   displayName: string;
-  email: string;
   createdAt: string;
   avatarUrl: string | null;
 };
@@ -25,7 +24,6 @@ export type FriendRelationship = 'None' | 'Friends' | 'OutgoingRequest' | 'Incom
 export type UserSearchResult = {
   userId: string;
   displayName: string;
-  email: string;
   relationship: FriendRelationship;
   avatarUrl: string | null;
 };

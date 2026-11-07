@@ -150,6 +150,8 @@ public static class DependencyInjection
 
         private IServiceCollection AddRealtime()
         {
+            services.AddSingleton<FriendsPresenceTracker>();
+
             services.AddSignalR()
                 .AddJsonProtocol(options =>
                 {

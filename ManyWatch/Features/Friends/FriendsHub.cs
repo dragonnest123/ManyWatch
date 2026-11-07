@@ -14,16 +14,37 @@ public class FriendsHub : Hub
     private const int RecentMessagesCount = 100;
 
     private readonly AppDbContext _db;
+    private readonly FriendsPresenceTracker _presence;
 
-    public FriendsHub(AppDbContext db)
+    public FriendsHub(AppDbContext db, FriendsPresenceTracker presence)
     {
         _db = db;
+        _presence = presence;
     }
 
     public override async Task OnConnectedAsync()
     {
-        await Groups.AddToGroupAsync(Context.ConnectionId, UserGroup(GetUserId()));
+        var userId = GetUserId();
+        await Groups.AddToGroupAsync(Context.ConnectionId, UserGroup(userId));
+
+        if (_presence.AddConnection(userId))
+        {
+            await NotifyFriendsPresenceAsync(userId, isOnline: true);
+        }
+
         await base.OnConnectedAsync();
+    }
+
+    public override async Task OnDisconnectedAsync(Exception? exception)
+    {
+        var value = Context.User?.FindFirstValue(JwtRegisteredClaimNames.Sub);
+
+        if (Guid.TryParse(value, out var userId) && _presence.RemoveConnection(userId))
+        {
+            await NotifyFriendsPresenceAsync(userId, isOnline: false);
+        }
+
+        await base.OnDisconnectedAsync(exception);
     }
 
     public async Task<IReadOnlyList<DirectMessageResponse>> GetMessages(Guid friendId)
@@ -88,6 +109,27 @@ public class FriendsHub : Hub
 
         if (!areFriends)
             throw new HubException("You can message only your friends");
+    }
+
+    private async Task NotifyFriendsPresenceAsync(Guid userId, bool isOnline)
+    {
+        var friendIds = await _db.Friendships
+            .AsNoTracking()
+            .Where(friendship => friendship.Status == FriendshipStatus.Accepted
+                                 && (friendship.UserLowId == userId || friendship.UserHighId == userId))
+            .Select(friendship => friendship.UserLowId == userId
+                ? friendship.UserHighId
+                : friendship.UserLowId)
+            .ToListAsync();
+
+        if (friendIds.Count == 0)
+            return;
+
+        await Clients
+            .Groups(friendIds.Select(UserGroup).ToArray())
+            .SendAsync(
+                "FriendPresenceChanged",
+                new FriendPresenceChangedResponse(userId, isOnline));
     }
 
     private static string NormalizeDirectMessage(string? content)
